@@ -4,7 +4,7 @@ Compressible Wall::calculateState(const Compressible& w, const Face& f, const Th
 {
     Compressible out = w;
 
-    Vars<3> normalVector = vector3toVars(f.normalVector);
+    Vars<3> normalVector = f.normalVector;
     Vars<3> ghostVelocity = w.velocity() - 2*w.normalVelocity(normalVector)*normalVector;
     double density = w.density();
 
@@ -24,7 +24,7 @@ void Wall::correct(const Field<Compressible>& w, Field<Compressible>& wl, Field<
 
     for (auto & faceIndex : boundary.facesIndex)
     {
-        Vars<5> wlDiff = dot(grad[ownerIndexList[faceIndex]], vector3toVars(faces[faceIndex].midpoint - cells[ownerIndexList[faceIndex]].center));
+        Vars<5> wlDiff = dot(grad[ownerIndexList[faceIndex]], faces[faceIndex].midpoint - cells[ownerIndexList[faceIndex]].center);
 
         wl[faceIndex] = w[ownerIndexList[faceIndex]] + phi[ownerIndexList[faceIndex]]*wlDiff;
         wl[faceIndex].setThermoVar(thermoModel->updateThermo(wl[faceIndex]));
@@ -34,12 +34,12 @@ void Wall::correct(const Field<Compressible>& w, Field<Compressible>& wl, Field<
 
     /*for (auto & faceIndex : boundary.facesIndex)
     {
-        Vars<5> wlDiff = dot(grad[ownerIndexList[faceIndex]], vector3toVars(faces[faceIndex].midpoint - cells[ownerIndexList[faceIndex]].center));
+        Vars<5> wlDiff = dot(grad[ownerIndexList[faceIndex]], faces[faceIndex].midpoint - cells[ownerIndexList[faceIndex]].center);
 
         wl[faceIndex] = w[ownerIndexList[faceIndex]] + phi[ownerIndexList[faceIndex]]*wlDiff;
         wl[faceIndex].setThermoVar(thermoModel->updateThermo(wl[faceIndex]));
 
-        Vars<5> wrDiff = dot(grad[ownerIndexList[faceIndex]], -vector3toVars(faces[faceIndex].midpoint - cells[ownerIndexList[faceIndex]].center));
+        Vars<5> wrDiff = dot(grad[ownerIndexList[faceIndex]], -faces[faceIndex].midpoint - cells[ownerIndexList[faceIndex]].center);
         wr[faceIndex] = wr[faceIndex] + phi[ownerIndexList[faceIndex]]*wrDiff;
     }*/
 }

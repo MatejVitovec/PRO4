@@ -354,7 +354,7 @@ std::vector<std::shared_ptr<BoundaryCondition>> CaseSetter::createBoundaryCondit
                                                                 TTot,
                                                                 state[1],
                                                                 state[2],
-                                                                vector3toVars(angleAngleToUnit(std::stod(xyAngle), std::stod(xzAngle)))));
+                                                                angleAngleToUnit(std::stod(xyAngle), std::stod(xzAngle))));
             }
             else { errorMessage("spatne zadane parametry BC"); }
         }
@@ -370,7 +370,7 @@ std::vector<std::shared_ptr<BoundaryCondition>> CaseSetter::createBoundaryCondit
                 out.push_back(std::make_shared<IsentropicInlet>(auxBoundary,
                                                                      std::stod(totalPressure),
                                                                      std::stod(totalDensity),
-                                                                     vector3toVars(angleAngleToUnit(std::stod(xyAngle), std::stod(xzAngle)))));
+                                                                     angleAngleToUnit(std::stod(xyAngle), std::stod(xzAngle))));
             }
             else { errorMessage("spatne zadane parametry BC"); }
         }*/
@@ -394,7 +394,7 @@ std::vector<std::shared_ptr<BoundaryCondition>> CaseSetter::createBoundaryCondit
 
             if(shiftArray.size() == 3)
             {
-                out.push_back(std::make_shared<Periodicity>(auxBoundary, Vector3(shiftArray[0], shiftArray[1], shiftArray[2]), "000", mesh));
+                out.push_back(std::make_shared<Periodicity>(auxBoundary, Vars<3>({shiftArray[0], shiftArray[1], shiftArray[2]}), "000", mesh));
             }
             else { errorMessage("spatne zadane parametry BC"); }
         }

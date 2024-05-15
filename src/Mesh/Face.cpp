@@ -3,11 +3,11 @@
 #include "Face.hpp"
 
 
-void Face::update(const std::vector<Vector3>& nodeList)
+void Face::update(const std::vector<Vars<3>>& nodeList)
 {
     midpoint = calculateMidpoint(nodeList);
 
-    Vector3 normalVectorScale = calculateNormalVector(nodeList);
+    Vars<3> normalVectorScale = calculateNormalVector(nodeList);
 
     area = norm2(normalVectorScale);
     normalVector = normalVectorScale/area;
@@ -44,26 +44,26 @@ void Face::reverseOrientation()
     //update();
 }
 
-Vector3 Face::calculateNormalVector(const std::vector<Vector3>& nodeList)
+Vars<3> Face::calculateNormalVector(const std::vector<Vars<3>>& nodeList)
 {
-    Vector3 surface = Vector3();
+    Vars<3> surface = Vars<3>();
 
     int i;
     for (i = 0; i < nodesIndex.size() - 1; i++)
     {
-        Vector3 auxSurface = cross(nodeList[nodesIndex[i+1]] - nodeList[nodesIndex[i]], (midpoint - nodeList[nodesIndex[i]])/2.0);
+        Vars<3> auxSurface = cross(nodeList[nodesIndex[i+1]] - nodeList[nodesIndex[i]], (midpoint - nodeList[nodesIndex[i]])/2.0);
         surface = surface + auxSurface;
     }
     
-    Vector3 auxSurface = cross(nodeList[nodesIndex[0]] - nodeList[nodesIndex[i]], (midpoint - nodeList[nodesIndex[i]])/2.0);
+    Vars<3> auxSurface = cross(nodeList[nodesIndex[0]] - nodeList[nodesIndex[i]], (midpoint - nodeList[nodesIndex[i]])/2.0);
     surface = surface + auxSurface;
 
     return surface;
 }
 
-Vector3 Face::calculateMidpoint(const std::vector<Vector3>& nodeList) const
+Vars<3> Face::calculateMidpoint(const std::vector<Vars<3>>& nodeList) const
 {
-    Vector3 aux = Vector3();
+    Vars<3> aux = Vars<3>();
 
     int i;
     for (i = 0; i < nodesIndex.size(); i++)

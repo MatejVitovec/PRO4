@@ -1,4 +1,4 @@
-Solver:                 heunscheme
+Solver:                 expliciteuler
 
 LocalTimeStep:          true
 
@@ -11,12 +11,6 @@ cfl:                    0.6
 SaveEveryIter:          2000
 
 RiemannSolver:          hllc
-
-Reconstruction
-{
-        gradientSolver: leastSquares
-        limiter:        cubic
-}
 
 Mesh
 {

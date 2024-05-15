@@ -10,7 +10,7 @@
 #include "Mesh.hpp"
 
 
-const std::vector<Vector3>& Mesh::getNodeList() const
+const std::vector<Vars<3>>& Mesh::getNodeList() const
 {
     return nodeList;
 }
@@ -317,12 +317,12 @@ void Mesh::createNodesGmsh(const std::vector<std::vector<std::string>>& nodesGms
     {
         if(stoi(nodesGmsh[i][0]) == i)
         {
-            nodeList.push_back(Vector3(stof(nodesGmsh[i][1]), stof(nodesGmsh[i][2]), stof(nodesGmsh[i][3])));
+            nodeList.push_back(Vars<3>({stof(nodesGmsh[i][1]), stof(nodesGmsh[i][2]), stof(nodesGmsh[i][3])}));
         }
         else
         {
             std::cout << "Chybejici Node, index:" << i << std::endl;
-            nodeList.push_back(Vector3());
+            nodeList.push_back(Vars<3>());
         }
     }
 }

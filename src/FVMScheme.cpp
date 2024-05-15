@@ -217,8 +217,8 @@ void FVMScheme::reconstruct()
         int neighbour = neighborIndexList[i];
         if(neighbour >= 0)
         {
-            Vars<5> wlDiff = dot(grad[ownerIndexList[i]], vector3toVars(faces[i].midpoint - cells[ownerIndexList[i]].center));
-            Vars<5> wrDiff = dot(grad[neighborIndexList[i]], vector3toVars(faces[i].midpoint - cells[neighborIndexList[i]].center));
+            Vars<5> wlDiff = dot(grad[ownerIndexList[i]], faces[i].midpoint - cells[ownerIndexList[i]].center);
+            Vars<5> wrDiff = dot(grad[neighborIndexList[i]], faces[i].midpoint - cells[neighborIndexList[i]].center);
 
             wl[i] = w[ownerIndexList[i]] + phi[ownerIndexList[i]]*wlDiff;
             wr[i] = w[neighborIndexList[i]] + phi[neighborIndexList[i]]*wrDiff;
@@ -247,7 +247,7 @@ void FVMScheme::updateTimeStep()
 
     for (int i = 0; i < w.size(); i++)
     {
-        Vars<3> projectedArea = vector3toVars(cells[i].projectedArea);
+        Vars<3> projectedArea = cells[i].projectedArea;
         timeSteps[i] = cfl*(cells[i].volume/sum(projectedArea*(abs(w[i].velocity()) + Vars<3>(w[i].soundSpeed()))));
         if (timeSteps[i] < 0.0)
         {

@@ -4,8 +4,7 @@
 #include <vector>
 #include <memory>
 #include <cmath>
-
-#include "Mesh/Vector3.hpp"
+#include <sstream>
 
 template <int N>
 class Vars
@@ -37,7 +36,7 @@ class Vars
 };
 
 template <int N>
-void Vars<N>::operator+= (const Vars<N>& v)
+inline void Vars<N>::operator+= (const Vars<N>& v)
 {
     for (int i = 0; i < N; i++)
     {
@@ -46,7 +45,7 @@ void Vars<N>::operator+= (const Vars<N>& v)
 }
 
 template <int N>
-void Vars<N>::operator-= (const Vars<N>& v)
+inline void Vars<N>::operator-= (const Vars<N>& v)
 {
     for (int i = 0; i < N; i++)
     {
@@ -55,7 +54,7 @@ void Vars<N>::operator-= (const Vars<N>& v)
 }
 
 template <int N>
-Vars<N> Vars<N>::operator-()
+inline Vars<N> Vars<N>::operator-()
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -69,7 +68,7 @@ Vars<N> Vars<N>::operator-()
 //////////////Non member operators///////////////////
 
 template <int N>
-bool operator== (const Vars<N>& u, const Vars<N>& v)
+inline bool operator== (const Vars<N>& u, const Vars<N>& v)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -81,7 +80,7 @@ bool operator== (const Vars<N>& u, const Vars<N>& v)
 }
 
 template <int N>
-Vars<N> operator+ (const Vars<N>& u, const Vars<N>& v)
+inline Vars<N> operator+ (const Vars<N>& u, const Vars<N>& v)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -93,7 +92,7 @@ Vars<N> operator+ (const Vars<N>& u, const Vars<N>& v)
 
 // u - v
 template <int N>
-Vars<N> operator- (const Vars<N>& u, const Vars<N>& v)
+inline Vars<N> operator- (const Vars<N>& u, const Vars<N>& v)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -105,7 +104,7 @@ Vars<N> operator- (const Vars<N>& u, const Vars<N>& v)
 
 // w * u
 template <int N>
-Vars<N> operator* (const Vars<N>& u, const Vars<N>& v)
+inline Vars<N> operator* (const Vars<N>& u, const Vars<N>& v)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -117,7 +116,7 @@ Vars<N> operator* (const Vars<N>& u, const Vars<N>& v)
 
 // w / u (po slozkach)
 template <int N>
-Vars<N> operator/ (const Vars<N>& u, const Vars<N>& v)
+inline Vars<N> operator/ (const Vars<N>& u, const Vars<N>& v)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -129,7 +128,7 @@ Vars<N> operator/ (const Vars<N>& u, const Vars<N>& v)
 
 // a * u
 template <int N>
-Vars<N> operator* (double a, const Vars<N>& u)
+inline Vars<N> operator* (double a, const Vars<N>& u)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -141,7 +140,7 @@ Vars<N> operator* (double a, const Vars<N>& u)
 
 // u * a
 template <int N>
-Vars<N> operator* (const Vars<N>& u, double a)
+inline Vars<N> operator* (const Vars<N>& u, double a)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -153,7 +152,7 @@ Vars<N> operator* (const Vars<N>& u, double a)
 
 // u / a
 template <int N>
-Vars<N> operator/ (const Vars<N>& u, double a)
+inline Vars<N> operator/ (const Vars<N>& u, double a)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -167,7 +166,24 @@ Vars<N> operator/ (const Vars<N>& u, double a)
 //////////////Non member function///////////////////
 
 template <int N>
-Vars<N> sqrt(const Vars<N>& u)
+inline double norm2(const Vars<N>& u)
+{
+    double out = 0;
+    for (int i = 0; i < N; i++)
+    {
+        out += u[i]*u[i];
+    }
+    return std::sqrt(out);
+}
+
+template <int N>
+inline Vars<N> unit(const Vars<N>& u)
+{
+    return u/norm2(u);
+}
+
+template <int N>
+inline Vars<N> sqrt(const Vars<N>& u)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -178,7 +194,7 @@ Vars<N> sqrt(const Vars<N>& u)
 }
 
 template <int N>
-Vars<N> abs(const Vars<N>& u)
+inline Vars<N> abs(const Vars<N>& u)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -189,7 +205,7 @@ Vars<N> abs(const Vars<N>& u)
 }
 
 template <int N>
-double dot(const Vars<N>& u, const Vars<N>& v)
+inline double dot(const Vars<N>& u, const Vars<N>& v)
 {
     double out = 0;
     for (int i = 0; i < N; i++)
@@ -200,7 +216,7 @@ double dot(const Vars<N>& u, const Vars<N>& v)
 }
 
 template <int N>
-double sum(const Vars<N>& u)
+inline double sum(const Vars<N>& u)
 {
     double out;
     for (int i = 0; i < N; i++)
@@ -211,7 +227,7 @@ double sum(const Vars<N>& u)
 }
 
 template <int N>
-Vars<N> max(const Vars<N>& u, const Vars<N>& v)
+inline Vars<N> max(const Vars<N>& u, const Vars<N>& v)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -222,7 +238,7 @@ Vars<N> max(const Vars<N>& u, const Vars<N>& v)
 }
 
 template <int N>
-Vars<N> min(const Vars<N>& u, const Vars<N>& v)
+inline Vars<N> min(const Vars<N>& u, const Vars<N>& v)
 {
     Vars<N> out;
     for (int i = 0; i < N; i++)
@@ -233,7 +249,7 @@ Vars<N> min(const Vars<N>& u, const Vars<N>& v)
 }
 
 template <int N>
-Vars<N> zeroSmallNumbers(const Vars<N>& u)
+inline Vars<N> zeroSmallNumbers(const Vars<N>& u)
 {
     constexpr double SMALLNUM = 1e-12;
 
@@ -248,7 +264,21 @@ Vars<N> zeroSmallNumbers(const Vars<N>& u)
     return out;
 }
 
-Vars<3> vector3toVars(const Vector3& vec);
+template <int N>
+inline std::ostream& operator<<(std::ostream& os, const Vars<N>& u)
+{
+    for (int i = 0; i < N; i++)
+    {
+        os << u[i] << " ";
+    }
+
+    return os;
+}
+
+
+Vars<3> cross(const Vars<3>& u, const Vars<3>& v);
+
+Vars<3> angleAngleToUnit(double xy, double xz);
 
 
 #endif // VARS_HPP

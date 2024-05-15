@@ -38,7 +38,7 @@ Field<Vars<5>> Limiter::calculateLimiter(const Field<Compressible>& wl, const Fi
         int neighbor = neighbours[i];
 
         Compressible wCOwner = wl[i];
-        Vars<5> denominatorOwner = dot(grad[owner], vector3toVars(faces[i].midpoint - cells[owner].center));
+        Vars<5> denominatorOwner = dot(grad[owner], faces[i].midpoint - cells[owner].center);
         Vars<5> phiCnOwner;
 
         for (int k = 0; k < 5; k++)
@@ -65,7 +65,7 @@ Field<Vars<5>> Limiter::calculateLimiter(const Field<Compressible>& wl, const Fi
         }
         
         Compressible wCNeighbor = wr[i];
-        Vars<5> denominatorNeighbor = dot(grad[neighbor], vector3toVars(faces[i].midpoint - cells[neighbor].center));
+        Vars<5> denominatorNeighbor = dot(grad[neighbor], faces[i].midpoint - cells[neighbor].center);
         Vars<5> phiCnNeighbor;
 
         for (int k = 0; k < 5; k++)
@@ -106,7 +106,7 @@ Field<Vars<5>> Limiter::calculateLimiter(const Field<Compressible>& wl, const Fi
         {
             Vars<5> phiCn;
 
-            Vars<3> cellToFaceDist = vector3toVars(faces[cellFacesIndexes[j]].midpoint - cells[i].center);
+            Vars<3> cellToFaceDist = faces[cellFacesIndexes[j]].midpoint - cells[i].center;
 
             Vars<5> denominator = dot(grad[i], cellToFaceDist);
 

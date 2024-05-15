@@ -11,7 +11,7 @@ namespace outputCFD
 {
     void outputVTK(std::string fileName, const Mesh& mesh, const Field<Compressible>& w);
 
-    void outputVTKPeriodicBoundary(std::string fileName, const Mesh& m, const Field<Compressible>& w, Vector3 shift);
+    void outputVTKPeriodicBoundary(std::string fileName, const Mesh& m, const Field<Compressible>& w, Vars<3> shift);
 
     void saveData(std::string fileName, const Field<Compressible>& w);
 

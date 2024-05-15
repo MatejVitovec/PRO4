@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "Vector3.hpp"
+#include "../Vars.hpp"
 #include "Cell.hpp"
 #include "Face.hpp"
 #include "Boundary.hpp"
@@ -16,7 +16,7 @@ class Mesh
     public:
         Mesh() {};
 
-        const std::vector<Vector3>& getNodeList() const;
+        const std::vector<Vars<3>>& getNodeList() const;
         const std::vector<Cell>& getCellList() const;
         const std::vector<Face>& getFaceList() const;
         const std::vector<Boundary>& getBoundaryList() const;
@@ -38,7 +38,7 @@ class Mesh
 
         bool checkFaces() const;
 
-        std::vector<Vector3> nodeList;
+        std::vector<Vars<3>> nodeList;
         std::vector<Cell> cellList;
         std::vector<Face> faceList;
         std::vector<Boundary> boundaryList;

@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include "Face.hpp"
-#include "Vector3.hpp"
+#include "../Vars.hpp"
 
 class Cell
 {
@@ -27,8 +27,8 @@ class Cell
         std::vector<int> ownFaceIndex;
         std::vector<int> neighborFaceIndex;
 
-        Vector3 center;
-        Vector3 projectedArea;
+        Vars<3> center;
+        Vars<3> projectedArea;
         double volume;
         
 

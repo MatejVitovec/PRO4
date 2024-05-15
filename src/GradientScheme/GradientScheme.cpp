@@ -27,7 +27,7 @@ void GradientScheme::calculateCellToCellDelta(const Mesh& mesh, const std::vecto
     {
         if (neighbours[i] != -1)
         {
-            cellToCellDelta[i] = vector3toVars(cells[neighbours[i]].center - cells[owners[i]].center);
+            cellToCellDelta[i] = cells[neighbours[i]].center - cells[owners[i]].center;
         }
     }
 
@@ -38,11 +38,11 @@ void GradientScheme::calculateCellToCellDelta(const Mesh& mesh, const std::vecto
             std::vector<int> boundaryFaces = boundaryCondition->getBoundary().facesIndex;
             std::vector<int> associatedBoundaryFaces = static_cast<Periodicity*>(boundaryCondition.get())->getPeriodicityFacesIndex();
 
-            Vector3 faceMidpointShift = static_cast<Periodicity*>(boundaryCondition.get())->getFaceShift();
+            Vars<3> faceMidpointShift = static_cast<Periodicity*>(boundaryCondition.get())->getFaceShift();
 
             for (int i = 0; i < boundaryFaces.size(); i++)
             {
-                cellToCellDelta[boundaryFaces[i]] = vector3toVars(cells[owners[associatedBoundaryFaces[i]]].center - cells[owners[boundaryFaces[i]]].center - faceMidpointShift);
+                cellToCellDelta[boundaryFaces[i]] = cells[owners[associatedBoundaryFaces[i]]].center - cells[owners[boundaryFaces[i]]].center - faceMidpointShift;
             }
         }
         else
@@ -52,7 +52,7 @@ void GradientScheme::calculateCellToCellDelta(const Mesh& mesh, const std::vecto
             for (int i = 0; i < boundaryFaces.size(); i++)
             {
                 //TODO - mozna to bude fungovat
-                cellToCellDelta[boundaryFaces[i]] = vector3toVars(2*(faces[boundaryFaces[i]].midpoint - cells[owners[boundaryFaces[i]]].center));
+                cellToCellDelta[boundaryFaces[i]] = 2*(faces[boundaryFaces[i]].midpoint - cells[owners[boundaryFaces[i]]].center);
             }
         }
     }

@@ -1,20 +1,20 @@
 #include <cmath>
 #include <iostream>
 #include "Cell.hpp"
-#include "Vector3.hpp"
+#include "../Vars.hpp"
 
 
 void Cell::update(const std::vector<Face>& faceList)
 {
     double vol = 0.0;
-    Vector3 cen = Vector3(0.0, 0.0, 0.0);
-    Vector3 projArea = Vector3(0.0, 0.0, 0.0);
+    Vars<3> cen = Vars<3>({0.0, 0.0, 0.0});
+    Vars<3> projArea = Vars<3>({0.0, 0.0, 0.0});
 
     for (auto & faceIndex : ownFaceIndex)
     {
         Face face = faceList[faceIndex];
-        Vector3 midpoint = face.midpoint;
-        Vector3 normal = face.area*face.normalVector;
+        Vars<3> midpoint = face.midpoint;
+        Vars<3> normal = face.area*face.normalVector;
         vol += dot(midpoint, normal);
         cen = cen + std::pow(norm2(midpoint), 2.0)*normal;
         projArea = projArea + abs(normal);
@@ -23,8 +23,8 @@ void Cell::update(const std::vector<Face>& faceList)
     for (auto & faceIndex : neighborFaceIndex)
     {
         Face face = faceList[faceIndex];
-        Vector3 midpoint = face.midpoint;
-        Vector3 normal = (-1.0)*face.area*face.normalVector;
+        Vars<3> midpoint = face.midpoint;
+        Vars<3> normal = (-1.0)*face.area*face.normalVector;
         vol += dot(midpoint, normal);
         cen = cen + std::pow(norm2(midpoint), 2.0)*normal;
         projArea = projArea + abs(normal);

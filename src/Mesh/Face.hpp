@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "Vector3.hpp"
+#include "../Vars.hpp"
 
 class Face
 {
@@ -15,7 +15,7 @@ class Face
         Face(std::vector<int> nodesIdx) : nodesIndex(nodesIdx), type(GENERAL) {};
         Face(std::vector<int> nodesIdx, faceType fType) : nodesIndex(nodesIdx), type(fType) {};
 
-        void update(const std::vector<Vector3>& nodeList);
+        void update(const std::vector<Vars<3>>& nodeList);
         bool check() const;
         bool equal(const Face& compFace) const;
 
@@ -26,14 +26,14 @@ class Face
         std::vector<int> nodesIndex;
 
         double area;
-        Vector3 normalVector;
-        Vector3 midpoint;
+        Vars<3> normalVector;
+        Vars<3> midpoint;
 
     protected:
         const int type;
 
-        Vector3 calculateNormalVector(const std::vector<Vector3>& nodeList);
-        Vector3 calculateMidpoint(const std::vector<Vector3>& nodeList) const;
+        Vars<3> calculateNormalVector(const std::vector<Vars<3>>& nodeList);
+        Vars<3> calculateMidpoint(const std::vector<Vars<3>>& nodeList) const;
 
 };
 

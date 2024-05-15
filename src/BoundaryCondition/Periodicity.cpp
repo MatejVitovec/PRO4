@@ -2,7 +2,7 @@
 #include "Periodicity.hpp"
 
 
-Periodicity::Periodicity(Boundary meshBoundary, Vector3 faceMidpointShift_, std::string associatedBoundaryName_, const Mesh& mesh) : BoundaryCondition(meshBoundary, PERIODICITY), faceMidpointShift(faceMidpointShift_), associatedBoundaryName(associatedBoundaryName_)
+Periodicity::Periodicity(Boundary meshBoundary, Vars<3> faceMidpointShift_, std::string associatedBoundaryName_, const Mesh& mesh) : BoundaryCondition(meshBoundary, PERIODICITY), faceMidpointShift(faceMidpointShift_), associatedBoundaryName(associatedBoundaryName_)
 {
     init(mesh);
 }
@@ -29,7 +29,7 @@ void Periodicity::init(const Mesh& mesh)
 
     for (int i = 0; i < boundary.facesIndex.size(); i++)
     {
-        Vector3 associatedFaceMidpoint = faceList[boundary.facesIndex[i]].midpoint + faceMidpointShift;
+        Vars<3> associatedFaceMidpoint = faceList[boundary.facesIndex[i]].midpoint + faceMidpointShift;
 
         int j;
         bool isFound = false;
@@ -59,7 +59,7 @@ std::vector<int> Periodicity::getPeriodicityFacesIndex() const
     return periodicityFacesIndex;
 }
 
-Vector3 Periodicity::getFaceShift() const
+Vars<3> Periodicity::getFaceShift() const
 {
     return faceMidpointShift;
 }
@@ -89,9 +89,9 @@ void Periodicity::correct(const Field<Compressible>& w, Field<Compressible>& wl,
 
     for (int i = 0; i < boundary.facesIndex.size(); i++)
     {
-        Vars<5> wlDiff = dot(grad[ownerIndexList[boundary.facesIndex[i]]], vector3toVars(faces[boundary.facesIndex[i]].midpoint - cells[ownerIndexList[boundary.facesIndex[i]]].center));
+        Vars<5> wlDiff = dot(grad[ownerIndexList[boundary.facesIndex[i]]], faces[boundary.facesIndex[i]].midpoint - cells[ownerIndexList[boundary.facesIndex[i]]].center);
                 
-        Vars<5> wrDiff = dot(grad[ownerIndexList[periodicityFacesIndex[i]]], vector3toVars(faces[boundary.facesIndex[i]].midpoint - cells[ownerIndexList[periodicityFacesIndex[i]]].center + faceMidpointShift));
+        Vars<5> wrDiff = dot(grad[ownerIndexList[periodicityFacesIndex[i]]], faces[boundary.facesIndex[i]].midpoint - cells[ownerIndexList[periodicityFacesIndex[i]]].center + faceMidpointShift);
 
         wl[boundary.facesIndex[i]] = w[ownerIndexList[boundary.facesIndex[i]]] + phi[ownerIndexList[boundary.facesIndex[i]]]*wlDiff;                
         wr[boundary.facesIndex[i]] = w[ownerIndexList[periodicityFacesIndex[i]]] + phi[ownerIndexList[periodicityFacesIndex[i]]]*wrDiff;

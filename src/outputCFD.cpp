@@ -27,7 +27,7 @@ double roundToZero(double in)
 
 void outputCFD::outputVTK(std::string fileName, const Mesh& mesh, const Field<Compressible>& w)
 {
-    const std::vector<Vector3>& nodeList = mesh.getNodeList();
+    const std::vector<Vars<3>>& nodeList = mesh.getNodeList();
     const std::vector<Cell>& cellList = mesh.getCellList();
 
     int cellSize = mesh.getCellsSize();
@@ -187,7 +187,7 @@ void outputCFD::saveFieldOnBoundary(std::string fileName, std::string boundaryNa
 		int faceIndex = boundary[boundaryIndex].facesIndex[i];
 
 		//f << faces[faceIndex].midpoint.x << " " << faces[faceIndex].midpoint.y << " " << faces[faceIndex].midpoint.z << " " << w[owners[faceIndex]].pressure() << "\n";
-		f << faces[faceIndex].midpoint.x << " " << w[owners[faceIndex]].pressure() << "\n";
+		f << faces[faceIndex].midpoint[0] << " " << w[owners[faceIndex]].pressure() << "\n";
 	}
 	
 }
@@ -195,9 +195,9 @@ void outputCFD::saveFieldOnBoundary(std::string fileName, std::string boundaryNa
 
 /////////////////////////
 
-void outputCFD::outputVTKPeriodicBoundary(std::string fileName, const Mesh& mesh, const Field<Compressible>& w, Vector3 shift)
+void outputCFD::outputVTKPeriodicBoundary(std::string fileName, const Mesh& mesh, const Field<Compressible>& w, Vars<3> shift)
 {
-    const std::vector<Vector3>& nodeList = mesh.getNodeList();
+    const std::vector<Vars<3>>& nodeList = mesh.getNodeList();
     const std::vector<Cell>& cellList = mesh.getCellList();
 
     int cellSize = mesh.getCellsSize();
@@ -231,7 +231,7 @@ void outputCFD::outputVTKPeriodicBoundary(std::string fileName, const Mesh& mesh
 
 	for (int i = 0; i < nodeList.size(); i++)
 	{
-		Vector3  node = nodeList[i] - shift;
+		Vars<3> node = nodeList[i] - shift;
 
 		for (int j = 0; j < nodeList.size(); j++)
 		{
