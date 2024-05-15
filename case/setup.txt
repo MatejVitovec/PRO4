@@ -1,0 +1,76 @@
+Solver:                 heunscheme
+
+LocalTimeStep:          true
+
+TargetError:            0.00001
+
+MaxIter:                1000000
+
+cfl:                    0.6
+
+SaveEveryIter:          2000
+
+RiemannSolver:          hllc
+
+Reconstruction
+{
+        gradientSolver: leastSquares
+        limiter:        cubic
+}
+
+Mesh
+{
+	type:           gmsh2
+	fileName:       ../meshes/se1050_cutEdgeCoarse2.msh
+}
+
+ThermoModel
+{
+        name:           idealgas
+}
+
+InitialCondition
+{
+        type: stagnationState
+        val: [573.15, 0.0, 0.0, 0.0, 100000.0]
+}
+
+BoundaryCondition
+{
+        inlet
+        {
+                type:                   pressureTemperatureInlet
+                totalPressure:          100000.0
+                totalTemperature:       573.15
+                xyAngle:                20
+                xzAngle:                0.0
+        }
+
+        outlet
+        {
+                type:           pressureOutlet
+                pressure:       42614.0
+        }
+
+        wall
+        {
+                type:   wall
+        }
+
+        wall2
+        {
+                type:   wall
+        }
+
+        periodbeg
+        {
+                type:   periodicity
+                shift:  [0.0, 0.0551168, 0.0]
+        }
+
+        periodend
+        {
+                type:   periodicity
+                shift:  [0.0, -0.0551168, 0.0]
+        }
+}
