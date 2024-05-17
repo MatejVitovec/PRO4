@@ -209,6 +209,11 @@ std::unique_ptr<GradientScheme> CaseSetter::createReconstructionGradient()
     {
         return std::make_unique<LeastSquare>();
     }
+    else if (name == "leastsquaresps")
+    {
+        return std::make_unique<LeastSquaresPS>();
+    }
+    
     
     std::cout << "Gradient solver not defined" << std::endl;
     return std::make_unique<GradientScheme>();
@@ -307,7 +312,7 @@ std::vector<std::shared_ptr<BoundaryCondition>> CaseSetter::createBoundaryCondit
 {
     const std::vector<Boundary>& meshBoundaryList = mesh.getBoundaryList();
 
-    std::vector<std::shared_ptr<BoundaryCondition>> out;
+    std::vector<std::shared_ptr<BoundaryCondition>> out(meshBoundaryList.size());
 
     std::vector<std::string> boundarydata = findParametersByKey("BoundaryCondition", data_);
     std::vector<std::string> boundaryNames = findObjectNamesInGroup(boundarydata);
@@ -319,7 +324,17 @@ std::vector<std::shared_ptr<BoundaryCondition>> CaseSetter::createBoundaryCondit
 
         Boundary auxBoundary;
 		bool exist = false;
-		for (const auto & meshBoundary : meshBoundaryList)
+        int boundaryId;
+        for (boundaryId = 0; boundaryId < meshBoundaryList.size(); boundaryId++)
+        {
+			if(meshBoundaryList[boundaryId].boundaryConditionName == boundaryNames[i])
+			{
+				auxBoundary = meshBoundaryList[boundaryId];
+				exist = true;
+				break;
+			}
+		}
+		/*for (const auto & meshBoundary : meshBoundaryList)
 		{
 			if(meshBoundary.boundaryConditionName == boundaryNames[i])
 			{
@@ -327,7 +342,7 @@ std::vector<std::shared_ptr<BoundaryCondition>> CaseSetter::createBoundaryCondit
 				exist = true;
 				break;
 			}
-		}
+		}*/
 		if(!exist)
 		{
 			std::cout << "Chyba BC" << std::endl;
@@ -348,45 +363,29 @@ std::vector<std::shared_ptr<BoundaryCondition>> CaseSetter::createBoundaryCondit
 
                 std::array<double, 3> state = thermoModel->initPressureTemperatureInlet(pTot, TTot);
 
-                out.push_back(std::make_shared<IsentropicInlet>(auxBoundary,
+                out[boundaryId] = std::make_shared<IsentropicInlet>(auxBoundary,
                                                                 state[0],
                                                                 pTot,
                                                                 TTot,
                                                                 state[1],
                                                                 state[2],
-                                                                angleAngleToUnit(std::stod(xyAngle), std::stod(xzAngle))));
+                                                                angleAngleToUnit(std::stod(xyAngle), std::stod(xzAngle)));
             }
             else { errorMessage("spatne zadane parametry BC"); }
         }
-        /*else if (type == "pressuredensityinlet")
-        {
-            std::string totalPressure = findParameterByKey("totalPressure: ", data);
-            std::string totalDensity = findParameterByKey("totalDensity: ", data);
-            std::string xyAngle = findParameterByKey("xyAngle: ", data);
-            std::string xzAngle = findParameterByKey("xzAngle: ", data);
-
-            if(totalPressure != "" && totalDensity != "" && xyAngle != "" && xzAngle != "")
-            {
-                out.push_back(std::make_shared<IsentropicInlet>(auxBoundary,
-                                                                     std::stod(totalPressure),
-                                                                     std::stod(totalDensity),
-                                                                     angleAngleToUnit(std::stod(xyAngle), std::stod(xzAngle))));
-            }
-            else { errorMessage("spatne zadane parametry BC"); }
-        }*/
         else if (type == "pressureoutlet")
         {
             std::string pressure = findParameterByKey("pressure: ", data);
 
             if(pressure != "")
             {
-                out.push_back(std::make_shared<PressureOutlet>(auxBoundary, std::stod(pressure)));
+                out[boundaryId] = std::make_shared<PressureOutlet>(auxBoundary, std::stod(pressure));
             }
             else { errorMessage("spatne zadane parametry BC"); }
         }
         else if (type == "wall")
         {
-            out.push_back(std::make_shared<Wall>(auxBoundary));
+            out[boundaryId] = std::make_shared<Wall>(auxBoundary);
         }
         else if (type == "periodicity")
         {
@@ -394,22 +393,22 @@ std::vector<std::shared_ptr<BoundaryCondition>> CaseSetter::createBoundaryCondit
 
             if(shiftArray.size() == 3)
             {
-                out.push_back(std::make_shared<Periodicity>(auxBoundary, Vars<3>({shiftArray[0], shiftArray[1], shiftArray[2]}), "000", mesh));
+                out[boundaryId] = std::make_shared<Periodicity>(auxBoundary, Vars<3>({shiftArray[0], shiftArray[1], shiftArray[2]}), "000", mesh);
             }
             else { errorMessage("spatne zadane parametry BC"); }
         }
         else if (type == "symmetry")
         {
-            out.push_back(std::make_shared<Wall>(auxBoundary));
+            out[boundaryId] = std::make_shared<Wall>(auxBoundary);
         }
         else if (type == "free")
         {
-            out.push_back(std::make_shared<FreeBoundary>(auxBoundary));
+            out[boundaryId] = std::make_shared<FreeBoundary>(auxBoundary);
         }
         else
         {
             errorMessage("chyba v zadani okrajove podmink");
-            out.push_back(std::make_shared<FreeBoundary>(auxBoundary));
+            out[boundaryId] = std::make_shared<FreeBoundary>(auxBoundary);
         }        
     }
 

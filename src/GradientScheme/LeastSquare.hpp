@@ -20,6 +20,10 @@ class LeastSquare : public GradientScheme
 
         void calculateInverseM(Field<Mat<3,3>> M);
 
+        Field<Vars<3>> cellToCellDelta; //faceField
+
+        void calculateCellToCellDelta(const Mesh& mesh, const std::vector<std::shared_ptr<BoundaryCondition>>& boundaryConditionList);
+
 
         
 

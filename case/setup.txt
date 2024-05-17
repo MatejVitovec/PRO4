@@ -1,6 +1,6 @@
-Solver:                 expliciteuler
+Solver:                 heunscheme
 
-LocalTimeStep:          true
+LocalTimeStep:          false
 
 TargetError:            0.00001
 
@@ -8,9 +8,15 @@ MaxIter:                1000000
 
 cfl:                    0.6
 
-SaveEveryIter:          2000
+SaveEveryIter:          500
 
 RiemannSolver:          hllc
+
+Reconstruction
+{
+        gradientSolver: leastsquaresps
+        limiter:        cubic
+}
 
 Mesh
 {
@@ -53,7 +59,7 @@ BoundaryCondition
 
         wall2
         {
-                type:   wall
+                type:   free
         }
 
         periodbeg

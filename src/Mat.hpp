@@ -254,5 +254,6 @@ Mat<3,3> adj(const Mat<3,3>& u);
 double det(const Mat<3,3>& u);
 
 Mat<3, 3> inv(const Mat<3, 3>& u);
+Mat<3, 3> invSingularCheck(const Mat<3, 3>& u);
 
 #endif // MAT_HPPX

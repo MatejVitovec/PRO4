@@ -30,7 +30,7 @@ class Face
         Vars<3> midpoint;
 
     protected:
-        const int type;
+        int type;
 
         Vars<3> calculateNormalVector(const std::vector<Vars<3>>& nodeList);
         Vars<3> calculateMidpoint(const std::vector<Vars<3>>& nodeList) const;

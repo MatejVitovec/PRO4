@@ -26,11 +26,13 @@ void HeunScheme::solve()
 
         updateTimeStep();
 
-        applyBoundaryConditions();
+        //applyBoundaryConditions();
+        calcBoundaryConditionFields();
 
-        calculateWlWr();
+        //calculateWlWr();
+        interpolateToFaces();
 
-        reconstruct();
+        //reconstruct();
 
         calculateFluxes();
 
@@ -42,11 +44,13 @@ void HeunScheme::solve()
 
         w = wn;
 
-        applyBoundaryConditions();
+        //applyBoundaryConditions();
+        calcBoundaryConditionFields();
 
-        calculateWlWr();
+        //calculateWlWr();
+        interpolateToFaces();
 
-        reconstruct();
+        //reconstruct();
 
         calculateFluxes();
 

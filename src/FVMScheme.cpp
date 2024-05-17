@@ -1,5 +1,6 @@
 #include <set>
 #include <iostream>
+#include <algorithm>
 #include "FVMScheme.hpp"
 
 #include "BoundaryCondition/Periodicity.hpp"
@@ -103,10 +104,19 @@ void FVMScheme::setInitialConditionsPrimitive(Vars<5> initialCondition)
 
 void FVMScheme::init()
 {
+    applyFreeBoundaryCondition();
+
     gradientScheme->init(mesh, boundaryConditionList);
 
     wl = Field<Compressible>(mesh.getFacesSize());
     wr = Field<Compressible>(mesh.getFacesSize());
+    boundaryFields = std::vector<std::vector<Compressible>>(boundaryConditionList.size());
+
+    for (int boundaryId = 0; boundaryId < boundaryConditionList.size(); boundaryId++)
+    {
+        int size = boundaryConditionList[boundaryId]->getBoundary().facesIndex.size();
+        boundaryFields[boundaryId] = std::vector<Compressible>(size);
+    }    
 
     timeSteps = Field<double>(mesh.getCellsSize());
 }
@@ -119,6 +129,34 @@ void FVMScheme::applyBoundaryConditions()
     for (auto & boundaryCondition : boundaryConditionList)
     {
         boundaryCondition->apply(ownerIndexList, faceList, w, wr, thermo.get());
+    }
+}
+
+void FVMScheme::applyFreeBoundaryCondition()
+{
+    for(auto& boundaryCondition : boundaryConditionList)
+    {
+        if(boundaryCondition->getType() == BoundaryCondition::FREEBOUNDARY)
+        {
+            mesh.deleteBoundary(boundaryCondition->getBoundary().boundaryConditionName);
+        }
+    }
+
+    boundaryConditionList.erase(std::remove_if(boundaryConditionList.begin(), boundaryConditionList.end(),
+        [](const std::shared_ptr<BoundaryCondition> & boundary) { return (boundary->getType() == BoundaryCondition::FREEBOUNDARY); }),
+        boundaryConditionList.end());
+
+    for(auto& boundaryCondition : boundaryConditionList)
+    {
+        boundaryCondition->updateMeshBoundary(mesh);
+    }
+
+    for(auto& boundaryCondition : boundaryConditionList)
+    {
+        if(boundaryCondition->getType() == BoundaryCondition::PERIODICITY)
+        {
+            static_cast<Periodicity*>(boundaryCondition.get())->init(mesh);
+        }
     }
 }
 
@@ -144,6 +182,98 @@ void FVMScheme::calculateWlWr()
             wr[i] = w[neighbour];
         }
     }    
+}
+
+void FVMScheme::interpolateToFaces()
+{
+    const std::vector<int>& ownerIndexList = mesh.getOwnerIndexList();
+    const std::vector<int>& neighborIndexList = mesh.getNeighborIndexList();
+
+    if(reconstruction)
+    {
+        for (int boundaryId = 0; boundaryId < boundaryFields.size(); boundaryId++)
+        {
+            const std::vector<int>& boundaryFacesIndexList = boundaryConditionList[boundaryId]->getBoundary().facesIndex;
+            for (int i = 0; i < boundaryFacesIndexList.size(); i++)
+            {
+                wr[boundaryFacesIndexList[i]] = boundaryFields[boundaryId][i];
+            }
+        }
+
+        Field<Mat<5,3>> grad = gradientScheme->calculateGradient(w, boundaryFields, mesh);
+        Field<Vars<5>> phi = limiter->calculateLimiter(w, boundaryFields, grad, mesh);
+
+        const std::vector<Cell>& cells = mesh.getCellList();
+        const std::vector<Face>& faces = mesh.getFaceList();
+        const std::vector<int>& ownerIndexList = mesh.getOwnerIndexList();
+        const std::vector<int>& neighborIndexList = mesh.getNeighborIndexList();
+
+        //EOS INTERVAL PRESERVING - todo mozna smazu
+        /*for (int i = 0; i < cells.size(); i++)
+        {
+            if (w[i].density() < 0.11 || w[i].internalEnergy() < 2200000.0)
+            {
+                phi[i] = Vars<5>(0.0);
+                //std::cout << "Err, EOS range; rho: " << w[i].density() << " e: " << w[i].internalEnergy() << std::endl;
+            }
+        }*/
+
+        for (int i = 0; i < faces.size(); i++)
+        {
+            int neighbour = neighborIndexList[i];
+            if(neighbour >= 0)
+            {
+                Vars<5> wlDiff = dot(grad[ownerIndexList[i]], faces[i].midpoint - cells[ownerIndexList[i]].center);
+                Vars<5> wrDiff = dot(grad[neighborIndexList[i]], faces[i].midpoint - cells[neighborIndexList[i]].center);
+
+                wl[i] = w[ownerIndexList[i]] + phi[ownerIndexList[i]]*wlDiff;
+                wr[i] = w[neighborIndexList[i]] + phi[neighborIndexList[i]]*wrDiff;
+            }
+            else
+            {
+                wl[i] = w[ownerIndexList[i]];
+            }
+        }
+
+        for (auto & boundaryCondition : boundaryConditionList)
+        {
+            boundaryCondition->correct(w, wl, wr, grad, phi, mesh, thermo.get());
+        }
+        
+        wl = thermo->updateField(wl);
+        wr = thermo->updateField(wr);
+    }
+    else
+    {
+        for (int i = 0; i < mesh.getFacesSize(); i++)
+        {        
+            wl[i] = w[ownerIndexList[i]];
+
+            int neighbour = neighborIndexList[i];
+            if(neighbour >= 0)
+            {
+                wr[i] = w[neighbour];
+            }
+        }
+
+        for (int boundaryId = 0; boundaryId < boundaryFields.size(); boundaryId++)
+        {
+            const std::vector<int>& boundaryFacesIndexList = boundaryConditionList[boundaryId]->getBoundary().facesIndex;
+
+            for (int i = 0; i < boundaryFacesIndexList.size(); i++)
+            {
+                wr[boundaryFacesIndexList[i]] = boundaryFields[boundaryId][i];
+            }
+        }
+    }
+}
+
+void FVMScheme::calcBoundaryConditionFields()
+{
+    for (int boundaryConditionId = 0; boundaryConditionId < boundaryConditionList.size(); boundaryConditionId++)
+    {
+        boundaryFields[boundaryConditionId] = boundaryConditionList[boundaryConditionId]->calc(w, mesh, thermo.get());
+    }
 }
 
 void FVMScheme::boundField()
@@ -301,4 +431,19 @@ Field<Vars<5>> FVMScheme::calculateResidual()
 Field<Compressible> FVMScheme::getResults() const
 {
     return w;
+}
+
+
+std::vector<std::vector<Compressible>> FVMScheme::calcBoundaryConditionsToBoundaryFields()
+{
+    const std::vector<int>& owners = mesh.getOwnerIndexList();
+    const std::vector<Face>& faceList = mesh.getFaceList();
+    std::vector<std::vector<Compressible>> out(boundaryConditionList.size());
+
+    for (int boundaryConditionId = 0; boundaryConditionId < boundaryConditionList.size(); boundaryConditionId++)
+    {
+        out[boundaryConditionId] = boundaryConditionList[boundaryConditionId]->calc(w, mesh, thermo.get());
+    }
+
+    return out;
 }

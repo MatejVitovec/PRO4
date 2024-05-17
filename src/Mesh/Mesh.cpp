@@ -61,6 +61,22 @@ void Mesh::update()
     updateCells();
 }
 
+void Mesh::sortCells()
+{
+    for (int i = 0; i < cellList.size(); i++)
+    {
+        cellList[i].calcApproxCenter(nodeList);
+    }
+
+    const Vars<3> zeroAxisForCellSort({-1.0, 0.0, 0.0});
+
+    std::sort(cellList.begin(), cellList.end(), [zeroAxisForCellSort](Cell a, Cell b)
+    { 
+        return norm2(a.center - zeroAxisForCellSort) < norm2(b.center - zeroAxisForCellSort); 
+    });
+
+    int a = 5;
+}
 
 void Mesh::createFaces()
 {
@@ -239,6 +255,8 @@ void Mesh::loadGmsh2(std::string fileName)
 
     createNodesGmsh(parseBlockDataGmsh(stringData, "Nodes"));
     createCellsGmsh(parseBlockDataGmsh(stringData, "Elements"));
+
+    sortCells();
 
     createFaces();
     createBoundariesGmsh(parseBlockDataGmsh(stringData, "PhysicalNames"), parseBlockDataGmsh(stringData, "Elements"));
@@ -459,5 +477,53 @@ void Mesh::createBoundariesGmsh(const std::vector<std::vector<std::string>>& phy
         }
         
         boundaryList.push_back(auxBoundary);
+    }
+
+    for(auto& boundary : boundaryList)
+    {
+        std::sort(boundary.facesIndex.begin(), boundary.facesIndex.end());
+    }
+}
+
+void Mesh::deleteBoundary(std::string boundaryConditionName)
+{
+    int index;
+    for (index = 0; index < boundaryList.size(); index++)
+    {
+        if(boundaryList[index].boundaryConditionName == boundaryConditionName)
+        {            
+            std::vector<int> boundaryFaceList = boundaryList[index].facesIndex;
+            std::sort(boundaryFaceList.begin(), boundaryFaceList.end());
+
+            for (int i = boundaryFaceList.size() - 1; i >= 0; i--)
+            {
+                for(auto& boundary : boundaryList)
+                {
+                    stepDownEveryOverIndex(boundary.facesIndex, boundaryFaceList[i]);
+                }
+            }
+
+            for (int i = boundaryFaceList.size() - 1; i >= 0; i--)
+            {
+                faceList.erase(faceList.begin() + boundaryFaceList[i]);
+                ownerIndexList.erase(ownerIndexList.begin() + boundaryFaceList[i]);
+                neighborIndexList.erase(neighborIndexList.begin() + boundaryFaceList[i]);
+            }
+
+            break;
+        }
+    }
+
+    boundaryList.erase(boundaryList.begin() + index);
+}
+
+void Mesh::stepDownEveryOverIndex(std::vector<int>& vec, int index) const // strcit do labda funkce
+{
+    for (int i = 0; i < vec.size(); i++)
+    {
+        if (vec[i] >= index)
+        {
+            vec[i]--;
+        }        
     }
 }

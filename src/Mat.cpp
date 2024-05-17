@@ -28,3 +28,19 @@ Mat<3, 3> inv(const Mat<3, 3>& u)
 {
     return adj(u)/det(u);
 }
+
+Mat<3, 3> invSingularCheck(const Mat<3, 3>& u)
+{
+    if(u[0][2] == 0.0 && u[1][2] == 0.0 && u[2][0] == 0.0 && u[2][1] == 0.0 && u[2][2] == 0.0)
+    {
+        Mat<3,3> out = Mat<3,3>();
+
+        out[0][0] = u[1][1];
+        out[0][1] = -u[0][1];
+        out[1][0] = -u[1][0];
+        out[1][1] = u[0][0];
+
+        return out/(out[0][0]*out[1][1] - u[0][1]*u[1][0]);
+    }
+    return adj(u)/det(u);
+}

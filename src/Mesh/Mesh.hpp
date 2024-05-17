@@ -30,7 +30,10 @@ class Mesh
         void update();
         void loadGmsh2(std::string fileName);
 
+        void deleteBoundary(std::string boundaryConditionName);
+
     private:
+        void sortCells();
         void createFaces();
 
         void updateCells();
@@ -52,6 +55,8 @@ class Mesh
         void createNodesGmsh(const std::vector<std::vector<std::string>>& nodesGmsh);
         void createCellsGmsh(const std::vector<std::vector<std::string>>& elementsGmsh);
         void createBoundariesGmsh(const std::vector<std::vector<std::string>>& physicalNamesGmsh, const std::vector<std::vector<std::string>>& elementsGmsh);
+
+        void stepDownEveryOverIndex(std::vector<int>& vec, int index) const;
 
 };
 

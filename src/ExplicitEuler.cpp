@@ -29,14 +29,26 @@ void ExplicitEuler::solve()
 
         updateTimeStep();
 
-        applyBoundaryConditions();
+        //applyBoundaryConditions();
+        calcBoundaryConditionFields(); //new
 
-        calculateWlWr();
-
-        if(reconstruction)
+/////////////
+        /*if (iter == 10000)
         {
-            reconstruct();
-        }
+            boundaryFields = calcBoundaryConditionsToBoundaryFields();
+            LeastSquaresPS gradTest = LeastSquaresPS();
+            gradTest.init(mesh, boundaryConditionList);
+
+            Field<Mat<5,3>> grad2 = gradTest.calculateGradient(w, boundaryFields, mesh);
+
+            outputCFD::saveGradients(grad2, mesh);
+        }*/
+
+/////////////
+
+        //calculateWlWr();
+
+        interpolateToFaces();
 
         calculateFluxes();
 

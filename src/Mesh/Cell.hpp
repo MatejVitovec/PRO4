@@ -30,10 +30,11 @@ class Cell
         Vars<3> center;
         Vars<3> projectedArea;
         double volume;
-        
 
+        void calcApproxCenter(const std::vector<Vars<3>>& nodeList);
+        
     protected:
-        const int type;
+        int type;
 
 };
 
@@ -46,7 +47,7 @@ inline std::ostream& operator<<(std::ostream& os, const Cell& cell)
     }
     
     return os;
-};
+}
 
 
 #endif // CELL_HPP

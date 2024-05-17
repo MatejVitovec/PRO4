@@ -12,10 +12,12 @@ class Periodicity : public BoundaryCondition
         void init(const Mesh& mesh);
 
         std::vector<int> getPeriodicityFacesIndex() const;
+        std::vector<int> getPeriodicityFacesOwnersIndexes() const;
         Vars<3> getFaceShift() const;
 
         Compressible calculateState(const Compressible& w, const Face& f, const Thermo * const thermoModel) const;
         void apply(const std::vector<int>& ownerIndexList, const std::vector<Face>& faces, const Field<Compressible>& w, Field<Compressible>& wr, const Thermo * const thermoModel) const;
+        std::vector<Compressible> calc(const Field<Compressible>& w, const Mesh& mesh, const Thermo * const thermoModel) const;
         void correct(const Field<Compressible>& w, Field<Compressible>& wl, Field<Compressible>& wr, const Field<Mat<5,3>>& grad, const Field<Vars<5>>& phi, const Mesh& mesh, const Thermo * const thermoModel) const;
 
     private:

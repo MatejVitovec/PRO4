@@ -21,8 +21,11 @@ class BoundaryCondition
         BoundaryConditionType getType() const;
         Boundary getBoundary() const;
 
+        void updateMeshBoundary(const Mesh& mesh);
+
         //TODO predelat na mesh, wr na konec argumentu funkce
         virtual void apply(const std::vector<int>& ownerIndexList, const std::vector<Face>& faces, const Field<Compressible>& w, Field<Compressible>& wr, const Thermo * const thermoModel) const;
+        virtual std::vector<Compressible> calc(const Field<Compressible>& w, const Mesh& mesh, const Thermo * const thermoModel) const;
 
         virtual void correct(const Field<Compressible>& w, Field<Compressible>& wl, Field<Compressible>& wr, const Field<Mat<5,3>>& grad, const Field<Vars<5>>& phi, const Mesh& mesh, const Thermo * const thermoModel) const;
 

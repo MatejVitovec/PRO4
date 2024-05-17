@@ -24,6 +24,7 @@
 #include "Thermo/Interpolation/BiQuadraticInterpolation.hpp"
 
 #include "GradientScheme/LeastSquare.hpp"
+#include "GradientScheme/LeastSquaresPS.hpp"
 #include "Limiter/BarthJespersen.hpp"
 #include "Limiter/Venkatakrishnan.hpp"
 #include "Limiter/CubicLimiter.hpp"

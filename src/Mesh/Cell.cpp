@@ -87,3 +87,15 @@ Cell::~Cell()
 {
     
 }
+
+void Cell::calcApproxCenter(const std::vector<Vars<3>>& nodeList)
+{
+    Vars<3> cen;
+
+    for (size_t i = 0; i < nodesIndex.size(); i++)
+    {
+        cen += nodeList[nodesIndex[i]];
+    }
+    
+    center = cen/nodesIndex.size();
+}
