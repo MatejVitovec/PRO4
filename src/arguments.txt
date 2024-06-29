@@ -1,0 +1,5 @@
+SE1050/1ord/lowPressure/idealGas
+SE1050/1ord/lowPressure/biLinear
+SE1050/1ord/lowPressure/biQuadratic
+SE1050/1ord/lowPressure/specialGas
+SE1050/1ord/lowPressure/iapws95

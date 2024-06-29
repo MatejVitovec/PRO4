@@ -112,6 +112,9 @@ void FVMScheme::init()
     wr = Field<Compressible>(mesh.getFacesSize());
     boundaryFields = std::vector<std::vector<Compressible>>(boundaryConditionList.size());
 
+    grad = Field<Mat<5,3>>(mesh.getCellsSize());
+    phi = Field<Vars<5>>(mesh.getCellsSize());
+
     for (int boundaryId = 0; boundaryId < boundaryConditionList.size(); boundaryId++)
     {
         int size = boundaryConditionList[boundaryId]->getBoundary().facesIndex.size();
@@ -200,8 +203,11 @@ void FVMScheme::interpolateToFaces()
             }
         }
 
-        Field<Mat<5,3>> grad = gradientScheme->calculateGradient(w, boundaryFields, mesh);
-        Field<Vars<5>> phi = limiter->calculateLimiter(w, boundaryFields, grad, mesh);
+        if (iter < 400000)
+        {
+            grad = gradientScheme->calculateGradient(w, boundaryFields, mesh);
+            phi = limiter->calculateLimiter(w, boundaryFields, grad, mesh);
+        }
 
         const std::vector<Cell>& cells = mesh.getCellList();
         const std::vector<Face>& faces = mesh.getFaceList();

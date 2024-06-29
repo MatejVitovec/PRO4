@@ -8,7 +8,7 @@ MaxIter:                1000000
 
 cfl:                    0.6
 
-SaveEveryIter:          500
+SaveEveryIter:          2000
 
 RiemannSolver:          hllc
 

@@ -10,7 +10,7 @@ void HeunScheme::solve()
 
     w = thermo->updateField(w);
 
-    int iter = 0;
+    iter = 0;
 
     bool exitLoop = false;
 

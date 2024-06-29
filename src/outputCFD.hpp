@@ -22,6 +22,8 @@ namespace outputCFD
 
     void saveLimiters(Field<Vars<5>> phi, const Mesh& mesh);
     void saveGradients(Field<Mat<5,3>> grad, const Mesh& mesh);
+
+    Field<Compressible> loadCompressibleFieldFromVTK(std::string fileName);
 }
 
 #endif //OUTPUTCFD_HPP

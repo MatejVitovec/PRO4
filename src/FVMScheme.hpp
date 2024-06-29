@@ -49,6 +49,7 @@ class FVMScheme
         void setTargetError(double targetError_);
         void setLocalTimeStep(bool localTimeStep_);
         void setReconstructionSettings(bool reconstruction_);
+        void setSavePath(std::string path) {savePath = path;}
 
         void setThermoModel(std::unique_ptr<Thermo> thermo_) {thermo = std::move(thermo_);}
         
@@ -57,6 +58,7 @@ class FVMScheme
         double getTargetError() const;
         bool getTimeStepsettings() const;
         bool getReconstructionSettings() const;
+        std::string getSavePath() const { return savePath; }
         const Mesh& getMesh() const;
         const Thermo* getThermoRef();
 
@@ -88,16 +90,21 @@ class FVMScheme
         Field<Compressible> wr;
         Field<Vars<5>> fluxes;
 
+        Field<Mat<5,3>> grad;
+        Field<Vars<5>> phi;
+
         double cfl;
         int maxIter;
         int saveEveryIter;
         double targetError;
         bool localTimeStep;
         bool reconstruction;
+        std::string savePath;
 
         Field<double> timeSteps;
 
         double time;
+        int iter;
 
         void updateTimeStep();
         void applyBoundaryConditions();

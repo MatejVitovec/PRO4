@@ -509,3 +509,96 @@ void outputCFD::saveGradients(Field<Mat<5,3>> grad, const Mesh& mesh)
 
 	f.close();
 }
+
+
+
+Field<Compressible> outputCFD::loadCompressibleFieldFromVTK(std::string fileName)
+{
+	Field<Compressible> out;
+	std::ifstream stream;
+    std::string line;
+
+    stream.open(fileName, std::ios_base::in);
+
+	std::vector<double> rho;
+	std::vector<std::array<double, 3>> rhoU;
+	std::vector<double> e;
+
+    if (stream.is_open())
+    {
+		while (std::getline(stream, line))
+		{
+			if (line != "\r" && line == "SCALARS rho float")
+			{
+				break;
+			}
+		}
+		std::getline(stream, line);
+
+        while (std::getline(stream, line))
+        {
+            if(line != "\r")
+            {
+				if (line.find("SCALARS") != std::string::npos)
+				{
+					break;
+				}
+				
+                rho.push_back(std::stod(line));
+            }            
+        }
+		std::getline(stream, line);
+		
+		while (std::getline(stream, line))
+        {
+            if(line != "\r")
+            {
+				if (line.find("SCALARS") != std::string::npos)
+				{
+					break;
+				}
+				
+                std::stringstream ss(line);
+				std::string segment;
+				std::vector<std::string> seglist;
+
+				while(std::getline(ss, segment, ' '))
+				{
+					seglist.push_back(segment);
+				}
+
+				rhoU.push_back(std::array<double, 3>{std::stod(seglist[0]), std::stod(seglist[1]), std::stod(seglist[2])});
+            }            
+        }
+		std::getline(stream, line);
+
+		while (std::getline(stream, line))
+        {
+            if(line != "\r")
+            {
+				if (line.find("SCALARS") != std::string::npos)
+				{
+					break;
+				}
+				
+                e.push_back(std::stod(line));
+            }            
+        }
+    }
+
+	std::cout << "sizes: " << rho.size() << " , " << rhoU.size() << " , " << e.size() << std::endl;
+
+	if (rho.size() == e.size() && rho.size() == rhoU.size())
+	{
+
+		std::cout << "ok" << std::endl;
+		
+		out = Field<Compressible>(rho.size());
+		for (int i = 0; i < out.size(); i++)
+		{
+			out[i] = Compressible({rho[i], rhoU[i][0]*rho[i], rhoU[i][1]*rho[i], rhoU[i][2]*rho[i], rho[i]*(e[i] + 0.5*(rhoU[i][0]*rhoU[i][0] + rhoU[i][1]*rhoU[i][1] + rhoU[i][2]*rhoU[i][2]))});
+		}		
+	}
+	
+	return out;
+}
