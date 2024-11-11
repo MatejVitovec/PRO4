@@ -42,6 +42,12 @@ Vars<5> Hllc::claculateFlux(const Compressible& wl, const Compressible& wr, cons
     sm = sm / (rhoL*(sl - nuL) - rhoR*(sr - nuR));
 
 
+    /*Vars<3> wSpeed = waveSpeedsEstimate2(wl, wr, normalVector);
+    double sl = wSpeed[0];
+    double sr = wSpeed[2];
+    double sm = wSpeed[1];
+    double pm = 0.0;*/
+
     //HLLC scheme
     if (sl >= 0)
     {
@@ -65,11 +71,11 @@ Vars<5> Hllc::claculateFlux(const Compressible& wl, const Compressible& wr, cons
         pm = pL + rhoL*(sl - nuL)*(sm - nuL);
         double rhoM = rhoL*(sl - nuL)/(sl - sm);
 
-        return Vars<5>({rhoL*nuL + sl*(rhoM - rhoL),
+        return Vars<5>({rhoL*nuL                         + sl*(rhoM - rhoL),
                         rhoL*nuL*uL + pL*normalVector[0] + sl*((rhoM - rhoL)*uL + (pm - pL)/(sl - sm)*normalVector[0]),
                         rhoL*nuL*vL + pL*normalVector[1] + sl*((rhoM - rhoL)*vL + (pm - pL)/(sl - sm)*normalVector[1]),
                         rhoL*nuL*wL + pL*normalVector[2] + sl*((rhoM - rhoL)*wL + (pm - pL)/(sl - sm)*normalVector[2]),
-                        rhoL*nuL*(EL + pL/rhoL) + sl*((rhoM - rhoL)*EL + (pm*sm - pL*nuL)/(sl - sm))});
+                        rhoL*nuL*(EL + pL/rhoL)          + sl*((rhoM - rhoL)*EL + (pm*sm - pL*nuL)/(sl - sm))});
     }
     else
     {
@@ -88,4 +94,28 @@ Vars<5> Hllc::claculateFlux(const Compressible& wl, const Compressible& wr, cons
                         rhoR*nuR*wR + pR*normalVector[2] + sr*((rhoM - rhoR)*wR + (pm - pR)/(sr - sm)*normalVector[2]),
                         rhoR*nuR*(ER + pR/rhoR) + sr*((rhoM - rhoR)*ER + (pm*sm - pR*nuR)/(sr - sm))});
     }
+}
+
+
+Vars<3> Hllc::waveSpeedsEstimate2(const Compressible& wl, const Compressible& wr, const Vars<3>& normalVector) const
+{
+    double al = wl.soundSpeed();
+    double ar = wr.soundSpeed();
+    double rhol = wl.density();
+    double rhor = wr.density();
+    double ul = wl.normalVelocity(normalVector);
+    double ur = wr.normalVelocity(normalVector);
+    double rholsqrt = sqrt(rhol);
+    double rhorsqrt = sqrt(rhor);
+
+    double n2 = 0.5*((rholsqrt*rhorsqrt)/std::pow(rholsqrt + rhorsqrt, 2));
+    double d = sqrt((rholsqrt*al*al + rhorsqrt*ar*ar)/(rholsqrt + rhorsqrt) + n2*std::pow(ur - ul, 2));
+
+    double uAvg = (rholsqrt*ul + rhorsqrt*ur)/(rholsqrt + rhorsqrt);
+
+    double sl = uAvg - d;
+    double sr = uAvg + d;
+    double ss = (wr.pressure() - wl.pressure() + rhol*ul*(sl - ul) - rhor*ur*(sr - ur))/(rhol*sl - rhol*ul - rhor*sr + rhor*ur);
+
+    return Vars<3>({sl, ss, sr});
 }

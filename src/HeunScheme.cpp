@@ -36,13 +36,13 @@ void HeunScheme::solve()
 
         calculateFluxes();
 
-        Field<Vars<5>> res = calculateResidual();
+        Field<Vars<5>> k1 = calculateResidual();
         
-        wn = w + (res*timeSteps);
+        wn = w + (k1*timeSteps);
 
-        wn = thermo->updateField(wn);
+        w = thermo->updateField(wn);
 
-        w = wn;
+
 
         //applyBoundaryConditions();
         calcBoundaryConditionFields();
@@ -54,26 +54,23 @@ void HeunScheme::solve()
 
         calculateFluxes();
 
-        res = calculateResidual();
+        Field<Vars<5>> k2 = calculateResidual();
 
-        wn = w + (res*(timeSteps/2.0));
+        wn = wOld + (k1 + k2)*(timeSteps/2.0);
 
-        wn = thermo->updateField(wn);
+        w = thermo->updateField(wn);
 
         if(iter % 100 == 0)
         {
-            resNorm = res.norm();
-            outputCFD::saveResidual("../results/residuals.txt", resNorm);
+            resNorm = (k1 + k2).norm();
+            outputCFD::saveResidual(savePath + "/residuals.txt", resNorm);
             std::cout << "iter: " << iter << " density res: " << resNorm[0] << std::endl;
-
             if(resNorm[0] < targetError) exitLoop = true;
         }
-
-        w = wn;
-
+        
         if(iter % saveEveryIter == 0)
         {
-            outputCFD::outputVTK("../results/results." + std::to_string(iter) + ".vtk", mesh, w);
+            outputCFD::outputVTK(savePath + "/results/results." + std::to_string(iter) + ".vtk", mesh, w);
         }
     }
 

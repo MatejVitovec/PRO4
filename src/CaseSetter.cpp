@@ -173,6 +173,7 @@ std::unique_ptr<Thermo> CaseSetter::createThermoModel()
 
         if(interpolationName == "bilinear")
         {
+            std::cout << "Nacitani biLin interpolace" << std::endl;
             return std::make_unique<Iapws95InterpolationThermo<BiLinearInterpolation>>();
         }
         else if(interpolationName == "biquadratic")

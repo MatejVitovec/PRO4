@@ -101,6 +101,9 @@ class FVMScheme
         bool reconstruction;
         std::string savePath;
 
+        int fixGradient;
+        int fixedGradStep;
+
         Field<double> timeSteps;
 
         double time;

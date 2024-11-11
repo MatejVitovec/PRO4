@@ -6,8 +6,21 @@
 #include <memory>
 #include <chrono>
 #include <fenv.h>
+#include <iomanip>
+#include <algorithm>
 
-#include "src/Thermo/Iapws95Thermo.hpp"
+class doublet
+{
+    public:
+        doublet(/* args */);
+
+        double x;
+        double p;
+
+    private:
+
+};
+
 
 
 
@@ -15,11 +28,35 @@ int main(int argc, char** argv)
 {
     feenableexcept(FE_INVALID | FE_OVERFLOW);
 
-    std::shared_ptr<Iapws95Thermo> thermo = std::make_shared<Iapws95Thermo>();
+	std::ifstream stream;
+    std::string line;
 
-    double M2is = thermo->calcM2is(435000.0, 350.0, 163000.0);
+    stream.open("fileName", std::ios_base::in);
 
-    std::cout << "M2is: " << M2is << std::endl;
+	std::vector<doublet> data;
+
+    if (stream.is_open())
+    {
+		while (std::getline(stream, line))
+        {
+            if(line != "\r")
+            {			
+                std::stringstream ss(line);
+				std::string segment;
+				std::vector<std::string> seglist;
+
+				while(std::getline(ss, segment, ' '))
+				{
+					seglist.push_back(segment);
+				}
+
+				x.push_back(std::stod(seglist[0]));
+                p.push_back(std::stod(seglist[1]));
+            }            
+        }
+    }
+
+    std::sort()
 
     return 0;
 }

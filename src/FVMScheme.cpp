@@ -122,6 +122,9 @@ void FVMScheme::init()
     }    
 
     timeSteps = Field<double>(mesh.getCellsSize());
+
+    fixGradient = 1000000;
+    fixedGradStep = 10000000;
 }
 
 void FVMScheme::applyBoundaryConditions()
@@ -203,7 +206,7 @@ void FVMScheme::interpolateToFaces()
             }
         }
 
-        if (iter < 400000)
+        if (iter < fixGradient || iter % fixedGradStep == 0)
         {
             grad = gradientScheme->calculateGradient(w, boundaryFields, mesh);
             phi = limiter->calculateLimiter(w, boundaryFields, grad, mesh);

@@ -48,6 +48,7 @@ Iapws95InterpolationThermo<INTERPOLATION>::Iapws95InterpolationThermo() : Thermo
 
     std::vector<int> pressureGridSize({800});
     std::vector<double> pressureBoundary({7000.0, 200000.0});
+    //std::vector<double> pressureBoundary({400000.0, 6000000.0});
     Interpolation::Transformation pressureTransformation(Interpolation::LOGINV);
 
     pressureInterpolationFromRhoE = INTERPOLATION(

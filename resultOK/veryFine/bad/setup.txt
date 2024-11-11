@@ -1,0 +1,78 @@
+Solver:                 heunscheme
+
+LocalTimeStep:          false
+
+TargetError:            0.00001
+
+MaxIter:                3000000
+
+cfl:                    0.5
+
+SaveEveryIter:          5000
+
+RiemannSolver:          hllc
+
+Reconstruction
+{
+        gradientSolver: leastsquaresps
+        limiter:        venkatakrishnan
+}
+
+Mesh
+{
+	type:           gmsh2
+	fileName:       ../meshes/meshVeryFine2.msh
+}
+
+ThermoModel
+{
+        name:           idealgas
+        gamma:          1.4
+        specificGasConstant: 287.0
+}
+
+InitialCondition
+{
+        type: stagnationState
+        val: [298.65, 0.0, 0.0, 0.0, 98071.7]
+}
+
+BoundaryCondition
+{
+        inlet
+        {
+                type:                   pressureTemperatureInlet
+                totalPressure:          98071.7
+                totalTemperature:       298.65
+                xyAngle:                19.3
+                xzAngle:                0.0
+        }
+
+        outlet
+        {
+                type:           pressureOutlet
+                pressure:       42298.026
+        }
+
+        wall
+        {
+                type:   wall
+        }
+
+        wall2
+        {
+                type:   free
+        }
+
+        periodbeg
+        {
+                type:   periodicity
+                shift:  [0.0, 0.0551168, 0.0]
+        }
+
+        periodend
+        {
+                type:   periodicity
+                shift:  [0.0, -0.0551168, 0.0]
+        }
+}

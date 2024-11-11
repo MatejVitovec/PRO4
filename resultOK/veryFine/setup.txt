@@ -1,14 +1,14 @@
-Solver:                 expliciteuler
+Solver:                 heunscheme
 
 LocalTimeStep:          false
 
 TargetError:            0.00001
 
-MaxIter:                2000000
+MaxIter:                3000000
 
 cfl:                    0.8
 
-SaveEveryIter:          5000
+SaveEveryIter:          1000
 
 RiemannSolver:          hllc
 

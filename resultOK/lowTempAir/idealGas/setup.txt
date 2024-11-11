@@ -43,7 +43,7 @@ BoundaryCondition
         {
                 type:                   pressureTemperatureInlet
                 totalPressure:          98071.7
-                totalTemperature:       298.65
+                totalTemperature:       289.65
                 xyAngle:                19.3
                 xzAngle:                0.0
         }
@@ -51,7 +51,7 @@ BoundaryCondition
         outlet
         {
                 type:           pressureOutlet
-                pressure:       42298.026
+                pressure:       40548.109
         }
 
         wall

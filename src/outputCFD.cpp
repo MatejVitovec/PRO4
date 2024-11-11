@@ -187,7 +187,7 @@ void outputCFD::saveFieldOnBoundary(std::string fileName, std::string boundaryNa
 		int faceIndex = boundary[boundaryIndex].facesIndex[i];
 
 		//f << faces[faceIndex].midpoint.x << " " << faces[faceIndex].midpoint.y << " " << faces[faceIndex].midpoint.z << " " << w[owners[faceIndex]].pressure() << "\n";
-		f << faces[faceIndex].midpoint[0] << " " << w[owners[faceIndex]].pressure() << "\n";
+		f << faces[faceIndex].midpoint[0] << " " << faces[faceIndex].midpoint[1] << " " << w[owners[faceIndex]].pressure() << "\n";
 	}
 	
 }
