@@ -8,6 +8,7 @@
 //#include "BoundaryCondition/PressureDensityInlet.hpp"
 #include "BoundaryCondition/IsentropicInlet.hpp"
 #include "BoundaryCondition/PressureOutlet.hpp"
+#include "BoundaryCondition/MeanPressureOutlet.hpp"
 #include "BoundaryCondition/FreeBoundary.hpp"
 #include "BoundaryCondition/Wall.hpp"
 #include "BoundaryCondition/Periodicity.hpp"
@@ -381,6 +382,16 @@ std::vector<std::shared_ptr<BoundaryCondition>> CaseSetter::createBoundaryCondit
             if(pressure != "")
             {
                 out[boundaryId] = std::make_shared<PressureOutlet>(auxBoundary, std::stod(pressure));
+            }
+            else { errorMessage("spatne zadane parametry BC"); }
+        }
+        else if (type == "meanpressureoutlet")
+        {
+            std::string pressure = findParameterByKey("pressure: ", data);
+
+            if(pressure != "")
+            {
+                out[boundaryId] = std::make_shared<MeanPressureOutlet>(auxBoundary, std::stod(pressure));
             }
             else { errorMessage("spatne zadane parametry BC"); }
         }

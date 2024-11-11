@@ -27,7 +27,7 @@ double saturatedPressure(double T)
 
 int main(int argc, char** argv)
 {
-    feenableexcept(FE_INVALID | FE_OVERFLOW);
+    //feenableexcept(FE_INVALID | FE_OVERFLOW);
 
     //////////////////////////////////
     /*std::shared_ptr<Helmholtz> thermo = std::make_shared<Iapws95>();
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     else
     {
         //savePath = "../resultOK/lowTempAir/idealGasHLLE";
-        savePath = "../results/test2";
+        savePath = "../results/SE1050/1ord/lowTempAir/IdealGas2";
         //savePath = "../results/SE1050/2ord/lowTempAir/idealGas";
     }
     
