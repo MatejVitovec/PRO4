@@ -19,32 +19,13 @@ double MeanPressureOutlet::calculateCorrectionConstant(const Mesh& mesh, const F
         }        
     }
 
-    return (pressure*w.size() - pressureSum)/pressureSumMachLessOne + 1.0;
+    return (pressure*boundary.facesIndex.size() - pressureSum)/pressureSumMachLessOne + 1.0;
 }
 
 Compressible MeanPressureOutlet::calculateState(const Compressible& w, const Face& f, const Thermo * const thermoModel) const
 {
     return Compressible();
 }
-
-/*void MeanPressureOutlet::apply(const std::vector<int>& ownerIndexList, const std::vector<Face>& faces, const Field<Compressible>& w, Field<Compressible>& wr, const Thermo * const thermoModel) const
-{
-    double pressureCorrection = calculateCorrectionConstant(ownerIndexList, faces, w);
-
-    std::cout << "AAA" << std::endl;
-
-    for (auto & faceIndex : boundary.facesIndex)
-    {
-        if (w[ownerIndexList[faceIndex]].normalVelocity(faces[faceIndex].normalVector)/w[ownerIndexList[faceIndex]].soundSpeed() < 1.0)
-        {
-            wr[faceIndex] = thermoModel->primitiveToConservative(Vars<5>({w[ownerIndexList[faceIndex]].density(),
-                                                                          w[ownerIndexList[faceIndex]].velocityU(),
-                                                                          w[ownerIndexList[faceIndex]].velocityV(),
-                                                                          w[ownerIndexList[faceIndex]].velocityW(),
-                                                                          w[ownerIndexList[faceIndex]].pressure()*pressureCorrection}));
-        }
-    }
-}*/
 
 std::vector<Compressible> MeanPressureOutlet::calc(const Field<Compressible>& w, const Mesh& mesh, const Thermo * const thermoModel) const
 {
@@ -57,15 +38,28 @@ std::vector<Compressible> MeanPressureOutlet::calc(const Field<Compressible>& w,
 
     for (int i = 0; i < boundary.facesIndex.size(); i++)
     {
-       //out[i] = calculateState(w[ownerIndexList[boundary.facesIndex[i]]], faceList[boundary.facesIndex[i]], thermoModel);
-
         if (w[ownerIndexList[boundary.facesIndex[i]]].normalVelocity(faceList[boundary.facesIndex[i]].normalVector)/w[ownerIndexList[boundary.facesIndex[i]]].soundSpeed() < 1.0)
         {
-            out[i] = thermoModel->primitiveToConservative(Vars<5>({w[ownerIndexList[boundary.facesIndex[i]]].density(),
-                                                                   w[ownerIndexList[boundary.facesIndex[i]]].velocityU(),
-                                                                   w[ownerIndexList[boundary.facesIndex[i]]].velocityV(),
-                                                                   w[ownerIndexList[boundary.facesIndex[i]]].velocityW(),
-                                                                   w[ownerIndexList[boundary.facesIndex[i]]].pressure()*pressureCorrection}));
+            if (pressureCorrection > 0.5 && pressureCorrection < 1.5)
+            {
+                out[i] = thermoModel->primitiveToConservative(Vars<5>({w[ownerIndexList[boundary.facesIndex[i]]].density(),
+                                                                       w[ownerIndexList[boundary.facesIndex[i]]].velocityU(),
+                                                                       w[ownerIndexList[boundary.facesIndex[i]]].velocityV(),
+                                                                       w[ownerIndexList[boundary.facesIndex[i]]].velocityW(),
+                                                                       w[ownerIndexList[boundary.facesIndex[i]]].pressure()*pressureCorrection}));
+            }
+            else
+            {
+                out[i] = thermoModel->primitiveToConservative(Vars<5>({w[ownerIndexList[boundary.facesIndex[i]]].density(),
+                                                                       w[ownerIndexList[boundary.facesIndex[i]]].velocityU(),
+                                                                       w[ownerIndexList[boundary.facesIndex[i]]].velocityV(),
+                                                                       w[ownerIndexList[boundary.facesIndex[i]]].velocityW(),
+                                                                       pressure}));
+            }
+        }
+        else
+        {
+            out[i] = w[ownerIndexList[boundary.facesIndex[i]]];
         }
     }
     

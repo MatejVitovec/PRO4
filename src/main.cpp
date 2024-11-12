@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     else
     {
         //savePath = "../resultOK/lowTempAir/idealGasHLLE";
-        savePath = "../results/SE1050/1ord/lowTempAir/IdealGas2";
+        savePath = "../results/testMeanPressureOutlet2";
         //savePath = "../results/SE1050/2ord/lowTempAir/idealGas";
     }
     

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <functional>
 
 #include "BiLinearInterpolation.hpp"
 
