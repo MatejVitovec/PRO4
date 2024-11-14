@@ -237,7 +237,7 @@ std::unique_ptr<Limiter> CaseSetter::createReconstructionLimiter()
     }
     else if(name == "cubic")
     {
-        return std::make_unique<CubicLimiter>(1.5);
+        return std::make_unique<CubicLimiter>(2);
     }
 
 

@@ -26,6 +26,7 @@ class Mesh
         int getNodesSize() const;
         int getFacesSize() const;
         int getCellsSize() const;
+        int getBoundarySize() const;
 
         void update();
         void loadGmsh2(std::string fileName);

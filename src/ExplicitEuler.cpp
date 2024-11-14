@@ -2,6 +2,8 @@
 #include <iostream>
 #include "outputCFD.hpp"
 
+#include "VolField.hpp"
+
 
 void ExplicitEuler::solve()
 {
@@ -39,10 +41,10 @@ void ExplicitEuler::solve()
 
         wn = w + (res*timeSteps);
 
-        auto start = std::chrono::high_resolution_clock::now();
+        //auto start = std::chrono::high_resolution_clock::now();
         wn = thermo->updateField(wn);        
-        auto stop = std::chrono::high_resolution_clock::now();
-        thermoUpdateFieldTime += std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
+        //auto stop = std::chrono::high_resolution_clock::now();
+        //thermoUpdateFieldTime += std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
 
         if(iter % 100 == 0)
         {
@@ -53,8 +55,8 @@ void ExplicitEuler::solve()
             std::cout << "iter: " << iter << " density res: " << resNorm[0] << std::endl;
             if(resNorm[0] < targetError) exitLoop = true;
 
-            outputCFD::saveValue(savePath + "/tmdUpdateTime.txt", thermoUpdateFieldTime/1000.0 - lastTmdUpdateTime);
-            lastTmdUpdateTime = thermoUpdateFieldTime/1000.0;
+            //outputCFD::saveValue(savePath + "/tmdUpdateTime.txt", thermoUpdateFieldTime/1000.0 - lastTmdUpdateTime);
+            //lastTmdUpdateTime = thermoUpdateFieldTime/1000.0;
         }
 
         w = wn;
@@ -68,7 +70,7 @@ void ExplicitEuler::solve()
     outputCFD::outputVTK(savePath + "/results/results." + std::to_string(iter) + ".vtk", mesh, w);
     std::cout << "iter: " << iter << std::endl;
 
-    std::cout << "time: " << time << std::endl;
+    //std::cout << "time: " << time << std::endl;
 
-    std::cout << "timeForCalculation: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startAll).count() << std::endl;
+    //std::cout << "timeForCalculation: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startAll).count() << std::endl;
 }

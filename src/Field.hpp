@@ -32,7 +32,7 @@ class Field
         template<typename U>
         void operator-=(const Field<U>& v);
 
-    private:
+    protected:
         std::vector<T> data;
 };
 

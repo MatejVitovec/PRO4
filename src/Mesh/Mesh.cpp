@@ -55,6 +55,11 @@ int Mesh::getCellsSize() const
     return cellList.size();
 }
 
+int Mesh::getBoundarySize() const
+{
+    return boundaryList.size();
+}
+
 void Mesh::update()
 {
     updateFaces();

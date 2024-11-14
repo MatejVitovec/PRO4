@@ -6,6 +6,7 @@
 
 #include "Compressible.hpp"
 #include "Field.hpp"
+#include "VolField.hpp"
 #include "Mesh/Mesh.hpp"
 #include "FluxSolver/FluxSolver.hpp"
 #include "Thermo/Thermo.hpp"
@@ -83,7 +84,7 @@ class FVMScheme
         Mesh mesh;
         std::vector<std::shared_ptr<BoundaryCondition>> boundaryConditionList;
 
-        Field<Compressible> w; //cell size
+        VolField<Compressible> w; //cell size
         std::vector<std::vector<Compressible>> boundaryFields;
 
         Field<Compressible> wl; //faces size
