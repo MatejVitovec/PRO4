@@ -69,20 +69,12 @@ Vars<3> Periodicity::getFaceShift() const
     return faceMidpointShift;
 }
 
-Compressible Periodicity::calculateState(const Compressible& w, const Face& f, const Thermo * const thermoModel) const
+
+Compressible Periodicity::calculateState(const Compressible& w, const ThermoVar& thermoVar, const Face& f, const Thermo * const thermoModel) const
 {
-    //je nutne definovat z duvodu abstraktni virtualni funkce - redefinuji celou funkci apply
+    //je nutne definovat z duvodu abstraktni virtualni funkce - redefinuji celou funkci calc
     std::cout << "ERROR" <<std::endl; 
     return Compressible();
-}
-
-void Periodicity::apply(const std::vector<int>& ownerIndexList, const std::vector<Face>& faces, const Field<Compressible>& w, Field<Compressible>& wr, const Thermo * const thermoModel) const
-{
-    for (int i = 0; i < boundary.facesIndex.size(); i++)
-    {
-        //periodicity nema update thermo
-        wr[boundary.facesIndex[i]] = w[periodicityFacesOwnersIndexes[i]];
-    }   
 }
 
 
@@ -100,11 +92,12 @@ void Periodicity::correct(const Field<Compressible>& w, Field<Compressible>& wl,
         wl[boundary.facesIndex[i]] = w[ownerIndexList[boundary.facesIndex[i]]] + phi[ownerIndexList[boundary.facesIndex[i]]]*wlDiff;                
         wr[boundary.facesIndex[i]] = w[ownerIndexList[periodicityFacesIndex[i]]] + phi[ownerIndexList[periodicityFacesIndex[i]]]*wrDiff;
 
-        wr[boundary.facesIndex[i]].setThermoVar(thermoModel->updateThermo(wr[boundary.facesIndex[i]]));
+        //wr[boundary.facesIndex[i]].setThermoVar(thermoModel->updateThermo(wr[boundary.facesIndex[i]]));
     }
 }
 
-std::vector<Compressible> Periodicity::calc(const Field<Compressible>& w, const Mesh& mesh, const Thermo * const thermoModel) const
+
+std::vector<Compressible> Periodicity::calc(const VolField<Compressible>& w, const VolField<ThermoVar>& thermoField, const Mesh& mesh, const Thermo * const thermoModel) const
 {
     const std::vector<int>& ownerIndexList = mesh.getOwnerIndexList();
 
@@ -118,28 +111,3 @@ std::vector<Compressible> Periodicity::calc(const Field<Compressible>& w, const 
 
     return out;   
 }
-
-/*
-
-void BoundaryCondition::apply(const std::vector<int>& ownerIndexList, const std::vector<Face>& faces, const Field<Compressible>& w, Field<Compressible>& wr, const Thermo * const thermoModel) const
-{
-    for (auto & faceIndex : boundary.facesIndex)
-    {
-        wr[faceIndex] = calculateState(w[ownerIndexList[faceIndex]], faces[faceIndex], thermoModel);
-    }    
-}
-
-std::vector<Compressible> BoundaryCondition::calc(const std::vector<Compressible>& w, const Mesh& mesh, const Thermo * const thermoModel) const
-{
-    const std::vector<Face>& faceList = mesh.getFaceList();
-    const std::vector<int>& ownerIndexList = mesh.getOwnerIndexList();
-
-    std::vector<Compressible> out(boundary.facesIndex.size());
-
-    for (int i = 0; i < boundary.facesIndex.size(); i++)
-    {
-       out[i] = calculateState(w[ownerIndexList[boundary.facesIndex[i]]], faceList[boundary.facesIndex[i]], thermoModel);
-    }
-    
-    return out;
-}*/

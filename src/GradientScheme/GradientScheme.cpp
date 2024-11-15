@@ -7,14 +7,7 @@ void GradientScheme::init(const Mesh& mesh, const std::vector<std::shared_ptr<Bo
 
 }
 
-Field<Mat<5,3>> GradientScheme::calculateGradient(const Field<Compressible>& wl, const Field<Compressible>& wr, const Mesh& mesh) const
-{
-    Field<Mat<5,3>> grad(mesh.getCellsSize());
-
-    return grad;
-}
-
-Field<Mat<5,3>> GradientScheme::calculateGradient(const Field<Compressible>& w, const std::vector<std::vector<Compressible>>& boundaryFields, const Mesh& mesh) const
+Field<Mat<5,3>> GradientScheme::calculateGradient(const VolField<Compressible>& w, const Mesh& mesh) const
 {
     Field<Mat<5,3>> grad(w.size());
 

@@ -26,6 +26,11 @@ class Field
             return data[i];
         }
 
+        const std::vector<T>& getData() const
+        {
+            return data;
+        }
+
         template<typename U>
         void operator+=(const Field<U>& v);
 

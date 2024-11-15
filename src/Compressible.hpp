@@ -13,9 +13,6 @@ class Compressible : public Vars<5>
 
         Compressible() : Vars<5>() {}
         Compressible(const std::array<double, 5>& in) : Vars<5>(in) {}
-        Compressible(const std::array<double, 5>& in, const std::array<double, 3>& inTermo) : Vars<5>(in), thermoVar(inTermo) {}
-
-        void setThermoVar(Vars<3> thermoProp); //TODO prejmenovat na setThernm
 
         virtual ~Compressible() {}
 
@@ -35,18 +32,12 @@ class Compressible : public Vars<5>
         double totalEnergy() const;
         double internalEnergy() const;
 
-        double temperature() const;
-        double pressure() const;        
-        double soundSpeed() const;
-        double machNumber() const;
-        Vars<3> thermo() const;
+        //double machNumber() const;
 
-        Vars<5> flux(const Vars<3>& normalVector) const;
-        Vars<5> primitive() const;
+        //Vars<5> flux(const Vars<3>& normalVector) const;
+        Vars<5> flux(const Vars<3>& thermoData, const Vars<3>& normalVector) const;
+        //Vars<5> primitive() const;
 
-    private:
-        enum {T, P, A};
-        Vars<3> thermoVar;
 };
 
 

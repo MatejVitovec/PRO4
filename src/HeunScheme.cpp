@@ -8,7 +8,7 @@ void HeunScheme::solve()
 
     Field<Compressible> wOld = Field<Compressible>(w.size());
 
-    w = thermo->updateField(w);
+    //w = thermo->updateField(w);
 
     iter = 0;
 
@@ -17,7 +17,7 @@ void HeunScheme::solve()
     Field<Compressible> wn = Field<Compressible>(w.size());
     Vars<5> resNorm;
 
-    while (iter < maxIter && !exitLoop)
+    /*while (iter < maxIter && !exitLoop)
     {
         iter++;
         wOld = w;
@@ -70,11 +70,11 @@ void HeunScheme::solve()
         
         if(iter % saveEveryIter == 0)
         {
-            outputCFD::outputVTK(savePath + "/results/results." + std::to_string(iter) + ".vtk", mesh, w);
+            outputCFD::outputVTK(savePath + "/results/results." + std::to_string(iter) + ".vtk", mesh, w, thermoField);
         }
-    }
+    }*/
 
-    outputCFD::outputVTK("../results/results." + std::to_string(iter) + ".vtk", mesh, w);
+    outputCFD::outputVTK("../results/results." + std::to_string(iter) + ".vtk", mesh, w, thermoField);
     std::cout << "iter: " << iter << std::endl;
 
     std::cout << "time: " << time << std::endl;

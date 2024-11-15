@@ -21,15 +21,15 @@ class IsentropicInlet : public BoundaryCondition
                                                       totalEnthalpy(totalEnthalpy_),
                                                       velocityDirection(velocityDirection_) {}
 
-        Compressible calculateState(const Compressible& w, const Face& f, const Thermo * const thermoModel) const;
+        Compressible calculateState(const Compressible& w, const ThermoVar& thermoVar, const Face& f, const Thermo * const thermoModel) const;
 
     private:
         double totalDensity;
         double totalPressure;
-        double totalTemperature;        
+        double totalTemperature;
         double totalEntropy;
         double totalEnthalpy;
         Vars<3> velocityDirection;
 };
 
-#endif // ISENTROPICINLET
+#endif // ISENTROPICINLET_HPP

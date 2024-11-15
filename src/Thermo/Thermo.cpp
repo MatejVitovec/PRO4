@@ -3,61 +3,39 @@
 
 #include "Thermo.hpp"
 
-Field<Compressible> Thermo::updateField(Field<Compressible> w) const
+void Thermo::updateThermo(VolField<ThermoVar>& thermoFiled, const VolField<Compressible>& w) const
 {
     #pragma omp parallel for
-    for (int i = 0; i < w.size(); i++)
+    for (size_t i = 0; i < thermoFiled.size(); i++)
     {
-        w[i].setThermoVar(updateThermo(w[i]));
+        thermoFiled[i] = updateThermo(w[i], thermoFiled[i]);
     }
 
-    return w;
+    #pragma omp parallel for
+    for (size_t j = 0; j < thermoFiled.boundarySize(); j++)
+    {
+        for (size_t i = 0; i < thermoFiled.boundary(j).size(); i++)
+        {
+            thermoFiled.boundary(j)[i] = updateThermo(w.boundary(j)[i], thermoFiled.boundary(j)[i]);
+        }        
+    }
+}
+
+void Thermo::updateThermoInternal(VolField<ThermoVar>& thermoFiled, const VolField<Compressible>& w) const
+{
+    #pragma omp parallel for
+    for (size_t i = 0; i < thermoFiled.size(); i++)
+    {
+        thermoFiled[i] = updateThermo(w[i], thermoFiled[i]);
+    }
 }
 
 
-/*Field<Compressible> Thermo::updateField(Field<Compressible> wn, const Field<Compressible>& w) const
+void Thermo::updateThermo(Field<ThermoVar>& thermoFiled, const Field<Compressible>& w) const
 {
     #pragma omp parallel for
-    for (int i = 0; i < wn.size(); i++)
+    for (size_t i = 0; i < thermoFiled.size(); i++)
     {
-        wn[i].setThermoVar(updateThermo(wn[i], w[i]));
+        thermoFiled[i] = updateThermo(w[i], thermoFiled[i]);
     }
-
-    return wn;
-}*/
-
-Field<Compressible> Thermo::updateInetrnalFieldFaces(Field<Compressible> w, const Mesh& mesh) const
-{
-    const std::vector<Face>& faces = mesh.getFaceList();
-    const std::vector<int>& neighborIndexList = mesh.getNeighborIndexList();
-
-    #pragma omp parallel for
-    for (int i = 0; i < faces.size(); i++)
-    {
-        int neighbour = neighborIndexList[i];
-        if(neighbour >= 0)
-        {
-            w[i].setThermoVar(updateThermo(w[i]));
-        }
-    }
-
-    return w;
 }
-
-/*Field<Compressible> Thermo::updateInetrnalFieldFaces(Field<Compressible> wn, const Field<Compressible>& w, const Mesh& mesh) const
-{
-    const std::vector<Face>& faces = mesh.getFaceList();
-    const std::vector<int>& neighborIndexList = mesh.getNeighborIndexList();
-
-    #pragma omp parallel for
-    for (int i = 0; i < faces.size(); i++)
-    {
-        int neighbour = neighborIndexList[i];
-        if(neighbour >= 0)
-        {
-            wn[i].setThermoVar(updateThermo(wn[i], w[i]));
-        }
-    }
-
-    return wn;
-}*/

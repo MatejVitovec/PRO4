@@ -1,6 +1,8 @@
 #ifndef VOLFIELD_H
 #define VOLFIELD_H
 
+#include <iostream>
+
 #include "Field.hpp"
 #include "Mesh/Mesh.hpp"
 
@@ -12,7 +14,7 @@ class VolField : public Field<T>
         using Field<T>::operator-=;
 
         VolField() = delete;
-        VolField(const Field<T>& field) : Field<T>(field), boundaryData() {}
+        //VolField(const Field<T>& field) : Field<T>(field), boundaryData() {}
         VolField(Mesh mesh_) : Field<T>(mesh_.getCellsSize()), boundaryData(mesh_.getBoundarySize()) {}
         VolField(Mesh mesh_, T def) : Field<T>(mesh_.getCellsSize(), def), boundaryData(mesh_.getBoundarySize()) {}
 
@@ -23,11 +25,16 @@ class VolField : public Field<T>
             boundaryData = std::vector<std::vector<T>>(i);
         }
 
+        size_t boundarySize() const
+        {
+            return boundaryData.size();
+        }
+
         const std::vector<T>& boundary(int i) const
         {
             if (i >= boundaryData.size())
             {
-                std::cout << "chyba pristupu do neuexistijiciho pole boundary values"
+                std::cout << "chyba pristupu do neuexistijiciho pole boundary values" << std::endl;
             }
             return boundaryData[i];
         }
@@ -36,9 +43,24 @@ class VolField : public Field<T>
         {
             if (i >= boundaryData.size())
             {
-                boundaryData.resize(index + 1);
+                boundaryData.resize(i + 1);
             }
             return boundaryData[i];
+        }
+
+        const std::vector<std::vector<T>>& getBoundaryData() const
+        {
+            return boundaryData;
+        }
+
+        std::vector<std::vector<T>>& getBoundaryData()
+        {
+            return boundaryData;
+        }
+
+        void update(const Field<T>& w)
+        {
+            Field<T>::data = w.getData(); //predelat na friend
         }
 
     private:

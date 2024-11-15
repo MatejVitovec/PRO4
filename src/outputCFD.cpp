@@ -25,7 +25,7 @@ double roundToZero(double in)
 	return in;
 }
 
-void outputCFD::outputVTK(std::string fileName, const Mesh& mesh, const Field<Compressible>& w)
+void outputCFD::outputVTK(std::string fileName, const Mesh& mesh, const Field<Compressible>& w, const Field<ThermoVar>& thermoField)
 {
     const std::vector<Vars<3>>& nodeList = mesh.getNodeList();
     const std::vector<Cell>& cellList = mesh.getCellList();
@@ -92,7 +92,7 @@ void outputCFD::outputVTK(std::string fileName, const Mesh& mesh, const Field<Co
 
     for (int i = 0; i < cellSize; i++)
     {
-		f << roundToZero(w[i].pressure()) << "\n";
+		f << roundToZero(thermoField[i].pressure()) << "\n";
 	}
 
 	f << "SCALARS M float\n"; 
@@ -100,7 +100,7 @@ void outputCFD::outputVTK(std::string fileName, const Mesh& mesh, const Field<Co
 
     for (int i = 0; i < cellSize; i++)
     {
-		f << roundToZero(w[i].machNumber()) << "\n";
+		f << roundToZero(w[i].absVelocity()/thermoField[i].soundSpeed()) << "\n";
 	}
 
 	f << "SCALARS T float\n"; 
@@ -108,7 +108,7 @@ void outputCFD::outputVTK(std::string fileName, const Mesh& mesh, const Field<Co
 
     for (int i = 0; i < cellSize; i++)
     {
-		f << roundToZero(w[i].temperature()) << "\n";
+		f << roundToZero(thermoField[i].temperature()) << "\n";
 	}
 	
 	f << std::endl;
@@ -156,7 +156,7 @@ void outputCFD::saveValue(std::string fileName, double val)
 	f.close();
 }
 
-void outputCFD::saveFieldOnBoundary(std::string fileName, std::string boundaryName, const Mesh& mesh, const Field<Compressible>& w)
+void outputCFD::saveFieldOnBoundary(std::string fileName, std::string boundaryName, const Mesh& mesh, const Field<Compressible>& w, const Field<ThermoVar>& thermoField)
 {
 	const std::vector<Boundary>& boundary = mesh.getBoundaryList();
 	const std::vector<Face>& faces = mesh.getFaceList();
@@ -187,7 +187,7 @@ void outputCFD::saveFieldOnBoundary(std::string fileName, std::string boundaryNa
 		int faceIndex = boundary[boundaryIndex].facesIndex[i];
 
 		//f << faces[faceIndex].midpoint.x << " " << faces[faceIndex].midpoint.y << " " << faces[faceIndex].midpoint.z << " " << w[owners[faceIndex]].pressure() << "\n";
-		f << faces[faceIndex].midpoint[0] << " " << faces[faceIndex].midpoint[1] << " " << w[owners[faceIndex]].pressure() << "\n";
+		f << faces[faceIndex].midpoint[0] << " " << faces[faceIndex].midpoint[1] << " " << thermoField[owners[faceIndex]].pressure() << "\n";
 	}
 	
 }
@@ -195,7 +195,7 @@ void outputCFD::saveFieldOnBoundary(std::string fileName, std::string boundaryNa
 
 /////////////////////////
 
-void outputCFD::outputVTKPeriodicBoundary(std::string fileName, const Mesh& mesh, const Field<Compressible>& w, Vars<3> shift)
+void outputCFD::outputVTKPeriodicBoundary(std::string fileName, const Mesh& mesh, const Field<Compressible>& w, const Field<ThermoVar>& thermoField, Vars<3> shift)
 {
     const std::vector<Vars<3>>& nodeList = mesh.getNodeList();
     const std::vector<Cell>& cellList = mesh.getCellList();
@@ -345,11 +345,11 @@ void outputCFD::outputVTKPeriodicBoundary(std::string fileName, const Mesh& mesh
 
     for (int i = 0; i < cellSize; i++)
     {
-		f << roundToZero(w[i].pressure()) << "\n";
+		f << roundToZero(thermoField[i].pressure()) << "\n";
 	}
 	for (int i = 0; i < cellSize; i++)
     {
-		f << roundToZero(w[i].pressure()) << "\n";
+		f << roundToZero(thermoField[i].pressure()) << "\n";
 	}
 
 	f << "SCALARS M float\n"; 
@@ -357,11 +357,11 @@ void outputCFD::outputVTKPeriodicBoundary(std::string fileName, const Mesh& mesh
 
     for (int i = 0; i < cellSize; i++)
     {
-		f << roundToZero(w[i].machNumber()) << "\n";
+		f << roundToZero(w[i].absVelocity()/thermoField[i].soundSpeed()) << "\n";
 	}
 	for (int i = 0; i < cellSize; i++)
     {
-		f << roundToZero(w[i].machNumber()) << "\n";
+		f << roundToZero(w[i].absVelocity()/thermoField[i].soundSpeed()) << "\n";
 	}
 
 	f << "SCALARS T float\n"; 
@@ -369,11 +369,11 @@ void outputCFD::outputVTKPeriodicBoundary(std::string fileName, const Mesh& mesh
 
     for (int i = 0; i < cellSize; i++)
     {
-		f << roundToZero(w[i].temperature()) << "\n";
+		f << roundToZero(thermoField[i].temperature()) << "\n";
 	}
     for (int i = 0; i < cellSize; i++)
     {
-		f << roundToZero(w[i].temperature()) << "\n";
+		f << roundToZero(thermoField[i].temperature()) << "\n";
 	}
 	
 	f << std::endl;

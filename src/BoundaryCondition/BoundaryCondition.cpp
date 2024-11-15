@@ -11,15 +11,7 @@ Boundary BoundaryCondition::getBoundary() const
     return boundary;
 }
 
-void BoundaryCondition::apply(const std::vector<int>& ownerIndexList, const std::vector<Face>& faces, const Field<Compressible>& w, Field<Compressible>& wr, const Thermo * const thermoModel) const
-{
-    for (auto & faceIndex : boundary.facesIndex)
-    {
-        wr[faceIndex] = calculateState(w[ownerIndexList[faceIndex]], faces[faceIndex], thermoModel);
-    }    
-}
-
-std::vector<Compressible> BoundaryCondition::calc(const Field<Compressible>& w, const Mesh& mesh, const Thermo * const thermoModel) const
+std::vector<Compressible> BoundaryCondition::calc(const VolField<Compressible>& w, const VolField<ThermoVar>& thermoField, const Mesh& mesh, const Thermo * const thermoModel) const
 {
     const std::vector<Face>& faceList = mesh.getFaceList();
     const std::vector<int>& ownerIndexList = mesh.getOwnerIndexList();
@@ -28,7 +20,7 @@ std::vector<Compressible> BoundaryCondition::calc(const Field<Compressible>& w, 
 
     for (int i = 0; i < boundary.facesIndex.size(); i++)
     {
-       out[i] = calculateState(w[ownerIndexList[boundary.facesIndex[i]]], faceList[boundary.facesIndex[i]], thermoModel);
+       out[i] = calculateState(w[ownerIndexList[boundary.facesIndex[i]]], thermoField[ownerIndexList[boundary.facesIndex[i]]], faceList[boundary.facesIndex[i]], thermoModel);
     }
     
     return out;

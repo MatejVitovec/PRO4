@@ -16,11 +16,11 @@ class Iapws95InterpolationThermo : public Thermo, Iapws95
 
         Iapws95InterpolationThermo();
 
-        Vars<3> updateThermo(const Compressible& data) const;
+        Vars<3> updateThermo(const Compressible& data, const ThermoVar& thermoData) const;
         Compressible primitiveToConservative(const Vars<5>& primitive) const;
         Compressible stagnationState(double TTot, double pTot) const;
 
-        Compressible isentropicInlet(double pTot, double TTot, double rhoTot, double sTot, double hTot, Vars<3> velocityDirection, Compressible stateIn) const;
+        Compressible isentropicInlet(double pTot, double TTot, double rhoTot, double sTot, double hTot, Vars<3> velocityDirection, Compressible stateIn, ThermoVar thermoIn) const;
         std::array<double, 3> initPressureTemperatureInlet(double pTot, double TTot) const;
 
 
@@ -73,7 +73,7 @@ Iapws95InterpolationThermo<INTERPOLATION>::Iapws95InterpolationThermo() : Thermo
 }
 
 template <typename INTERPOLATION>
-Vars<3> Iapws95InterpolationThermo<INTERPOLATION>::updateThermo(const Compressible& data) const
+Vars<3> Iapws95InterpolationThermo<INTERPOLATION>::updateThermo(const Compressible& data, const ThermoVar& thermoData) const
 {
     double pressure = pressureInterpolationFromRhoE.calcFastFind(data.density(), data.internalEnergy());
     double soundSpeed = soundSpeedInterpolationFromRhoE.calcFastFind(data.density(), data.internalEnergy());
@@ -81,7 +81,6 @@ Vars<3> Iapws95InterpolationThermo<INTERPOLATION>::updateThermo(const Compressib
 
     return Vars<3>({temperature, pressure, soundSpeed});
 }
-
 
 template <typename INTERPOLATION>
 Compressible Iapws95InterpolationThermo<INTERPOLATION>::primitiveToConservative(const Vars<5>& primitive) const
@@ -98,8 +97,7 @@ Compressible Iapws95InterpolationThermo<INTERPOLATION>::primitiveToConservative(
                          density*primitive[1],
                          density*primitive[2],
                          density*primitive[3],
-                         density*(energy + 0.5*(primitive[1]*primitive[1] + primitive[2]*primitive[2] + primitive[3]*primitive[3]))},
-                         {0.0, pressure, soundSpeed});
+                         density*(energy + 0.5*(primitive[1]*primitive[1] + primitive[2]*primitive[2] + primitive[3]*primitive[3]))});
 }
 
 template <typename INTERPOLATION>
@@ -112,14 +110,13 @@ Compressible Iapws95InterpolationThermo<INTERPOLATION>::stagnationState(double T
                          0.0,
                          0.0,
                          0.0,
-                         rhoTot*(e(rhoTot, TTot))},
-                         {TTot, pTot, a(rhoTot, TTot)});
+                         rhoTot*(e(rhoTot, TTot))});
 }
 
 template <typename INTERPOLATION>
-Compressible Iapws95InterpolationThermo<INTERPOLATION>::isentropicInlet(double pTot, double TTot, double rhoTot, double sTot, double hTot, Vars<3> velocityDirection, Compressible stateIn) const
+Compressible Iapws95InterpolationThermo<INTERPOLATION>::isentropicInlet(double pTot, double TTot, double rhoTot, double sTot, double hTot, Vars<3> velocityDirection, Compressible stateIn, ThermoVar thermoIn) const
 {
-    double pIn = std::min(stateIn.pressure(), pTot);
+    double pIn = std::min(thermoIn.pressure(), pTot);
 
     double guessRho = stateIn.density();
     double guess_e = stateIn.internalEnergy();
@@ -143,10 +140,7 @@ Compressible Iapws95InterpolationThermo<INTERPOLATION>::isentropicInlet(double p
                          rho*absU*velocityDirection[0],
                          rho*absU*velocityDirection[1],
                          rho*absU*velocityDirection[2],
-                         rho*(0.5*absU2 + e)},
-                        {temperatureInterpolationFromRhoE.calcFastFind(rho, e),
-                         pIn,
-                         soundSpeedInterpolationFromRhoE.calcFastFind(rho, e)});
+                         rho*(0.5*absU2 + e)});
 }
 
 template <typename INTERPOLATION>

@@ -1,10 +1,10 @@
 #include "PressureOutlet.hpp"
 
 
-Compressible PressureOutlet::calculateState(const Compressible& w, const Face& f, const Thermo * const thermoModel) const
+Compressible PressureOutlet::calculateState(const Compressible& w, const ThermoVar& thermoVar, const Face& f, const Thermo * const thermoModel) const
 {
-    //if(w.normalVelocity(f.normalVector)/w.soundSpeed() >= 1.0)
-    if(w.absVelocity()/w.soundSpeed() >= 1.0)
+    if(w.normalVelocity(f.normalVector)/thermoVar.soundSpeed() >= 1.0)
+    //if(w.absVelocity()/w.soundSpeed() >= 1.0)
     {
         return w;
     }

@@ -1,16 +1,15 @@
 #include "Wall.hpp"
 
-Compressible Wall::calculateState(const Compressible& w, const Face& f, const Thermo * const thermoModel) const
+Compressible Wall::calculateState(const Compressible& w, const ThermoVar& thermoVar, const Face& f, const Thermo * const thermoModel) const
 {
     Compressible out = w;
 
     Vars<3> normalVector = f.normalVector;
     Vars<3> ghostVelocity = w.velocity() - 2*w.normalVelocity(normalVector)*normalVector;
-    double density = w.density();
 
-    out[Compressible::RHO_U] = density*ghostVelocity[0];
-    out[Compressible::RHO_V] = density*ghostVelocity[1];
-    out[Compressible::RHO_W] = density*ghostVelocity[2];
+    out[Compressible::RHO_U] = w.density()*ghostVelocity[0];
+    out[Compressible::RHO_V] = w.density()*ghostVelocity[1];
+    out[Compressible::RHO_W] = w.density()*ghostVelocity[2];
 
     return out;
 }
@@ -27,9 +26,7 @@ void Wall::correct(const Field<Compressible>& w, Field<Compressible>& wl, Field<
         Vars<5> wlDiff = dot(grad[ownerIndexList[faceIndex]], faces[faceIndex].midpoint - cells[ownerIndexList[faceIndex]].center);
 
         wl[faceIndex] = w[ownerIndexList[faceIndex]] + phi[ownerIndexList[faceIndex]]*wlDiff;
-        wl[faceIndex].setThermoVar(thermoModel->updateThermo(wl[faceIndex]));
-
-        wr[faceIndex] = calculateState(wl[faceIndex], faces[faceIndex], thermoModel);
+        wr[faceIndex] = calculateState(wl[faceIndex], ThermoVar(), faces[faceIndex], thermoModel);
     }
 
     /*for (auto & faceIndex : boundary.facesIndex)

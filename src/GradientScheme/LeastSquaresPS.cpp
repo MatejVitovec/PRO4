@@ -160,14 +160,7 @@ void LeastSquaresPS::calculateInverseM(Field<Mat<3,3>> M)
     }
 }
 
-Field<Mat<5,3>> LeastSquaresPS::calculateGradient(const Field<Compressible>& wl, const Field<Compressible>& wr, const Mesh& mesh) const
-{
-    Field<Mat<5,3>> grad(wl.size()); //TODO predelat velikost na cell size tohle je spatne
-
-    return grad;
-}
-
-Field<Mat<5,3>> LeastSquaresPS::calculateGradient(const Field<Compressible>& w, const std::vector<std::vector<Compressible>>& boundaryFields, const Mesh& mesh) const
+Field<Mat<5,3>> LeastSquaresPS::calculateGradient(const VolField<Compressible>& w, const Mesh& mesh) const
 {
     Field<Mat<5,3>> grad(w.size());
     

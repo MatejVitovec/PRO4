@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "Compressible.hpp"
+#include "ThermoVar.hpp"
 #include "Field.hpp"
 #include "VolField.hpp"
 #include "Mesh/Mesh.hpp"
@@ -26,10 +27,13 @@ class FVMScheme
         FVMScheme(Mesh&& mesh_, std::unique_ptr<FluxSolver> fluxSolver_, std::unique_ptr<Thermo> thermo_) : mesh(std::move(mesh_)),
                                                                                                             fluxSolver(std::move(fluxSolver_)),
                                                                                                             thermo(std::move(thermo_)),
-                                                                                                            w(Field<Compressible>()),
+                                                                                                            w(VolField<Compressible>(mesh)),
+                                                                                                            thermoField(VolField<ThermoVar>(mesh)),
                                                                                                             wl(Field<Compressible>()),
                                                                                                             wr(Field<Compressible>()),
-                                                                                                            boundaryFields(),
+                                                                                                            thermoFieldL(Field<ThermoVar>()),
+                                                                                                            thermoFieldR(Field<ThermoVar>()),
+                                                                                                            //boundaryFields(),
                                                                                                             cfl(0.8), maxIter(10000000),
                                                                                                             targetError(0000005),
                                                                                                             localTimeStep(false),
@@ -73,6 +77,7 @@ class FVMScheme
         virtual void solve() = 0;
 
         Field<Compressible> getResults() const;
+        Field<ThermoVar> getResultsThermo() const;
         
         
     protected:
@@ -85,10 +90,15 @@ class FVMScheme
         std::vector<std::shared_ptr<BoundaryCondition>> boundaryConditionList;
 
         VolField<Compressible> w; //cell size
-        std::vector<std::vector<Compressible>> boundaryFields;
+        VolField<ThermoVar> thermoField;
+        //std::vector<std::vector<Compressible>> boundaryFields;
 
         Field<Compressible> wl; //faces size
         Field<Compressible> wr;
+
+        Field<ThermoVar> thermoFieldL; //faces size
+        Field<ThermoVar> thermoFieldR;
+
         Field<Vars<5>> fluxes;
 
         Field<Mat<5,3>> grad;
@@ -111,16 +121,14 @@ class FVMScheme
         int iter;
 
         void updateTimeStep();
-        void applyBoundaryConditions();
         void calculateWlWr();
         void interpolateToFaces();
         void calcBoundaryConditionFields();
         void calculateFluxes();
         Field<Vars<5>> calculateResidual();
-        void reconstruct();
         void boundField();
 
-        std::vector<std::vector<Compressible>> calcBoundaryConditionsToBoundaryFields();
+        //std::vector<std::vector<Compressible>> calcBoundaryConditionsToBoundaryFields();
 
     private:
 

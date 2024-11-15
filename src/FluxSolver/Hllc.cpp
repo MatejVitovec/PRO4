@@ -1,16 +1,16 @@
 #include "Hllc.hpp"
 
-Vars<5> Hllc::claculateFlux(const Compressible& wl, const Compressible& wr, const Vars<3>& normalVector) const
-{    
+Vars<5> Hllc::claculateFlux(const Compressible& wl, const Compressible& wr, const ThermoVar& thermoL, const ThermoVar& thermoR, const Vars<3>& normalVector) const
+{
     double rhoL = wl.density();
-    double pL = wl.pressure();
+    double pL = thermoL.pressure();
     double nuL = wl.normalVelocity(normalVector);
-    double aL = wl.soundSpeed();
+    double aL = thermoL.soundSpeed();
 
     double rhoR = wr.density();
-    double pR = wr.pressure();
+    double pR = thermoR.pressure();
     double nuR = wr.normalVelocity(normalVector);
-    double aR = wr.soundSpeed();
+    double aR = thermoR.soundSpeed();
     
     //PVRS
     double pm = std::fmax(0, 0.5*(pL + pR) - 0.5*(nuR - nuL)*0.5*(rhoL + rhoR)*0.5*(aL + aR));
@@ -52,12 +52,12 @@ Vars<5> Hllc::claculateFlux(const Compressible& wl, const Compressible& wr, cons
     if (sl >= 0)
     {
         //left state
-        return wl.flux(normalVector);
+        return wl.flux(thermoL, normalVector);
     }
     else if (sr <= 0)
     {
         //right state
-        return wr.flux(normalVector);
+        return wr.flux(thermoR, normalVector);
     }
     else if (sm >= 0)
     {
@@ -96,11 +96,10 @@ Vars<5> Hllc::claculateFlux(const Compressible& wl, const Compressible& wr, cons
     }
 }
 
-
-Vars<3> Hllc::waveSpeedsEstimate2(const Compressible& wl, const Compressible& wr, const Vars<3>& normalVector) const
+Vars<3> Hllc::waveSpeedsEstimate2(const Compressible& wl, const Compressible& wr, const ThermoVar& thermoL, const ThermoVar& thermoR, const Vars<3>& normalVector) const
 {
-    double al = wl.soundSpeed();
-    double ar = wr.soundSpeed();
+    double al = thermoL.soundSpeed();
+    double ar = thermoR.soundSpeed();
     double rhol = wl.density();
     double rhor = wr.density();
     double ul = wl.normalVelocity(normalVector);
@@ -115,7 +114,7 @@ Vars<3> Hllc::waveSpeedsEstimate2(const Compressible& wl, const Compressible& wr
 
     double sl = uAvg - d;
     double sr = uAvg + d;
-    double ss = (wr.pressure() - wl.pressure() + rhol*ul*(sl - ul) - rhor*ur*(sr - ur))/(rhol*sl - rhol*ul - rhor*sr + rhor*ur);
+    double ss = (thermoR.pressure() - thermoL.pressure() + rhol*ul*(sl - ul) - rhor*ur*(sr - ur))/(rhol*sl - rhol*ul - rhor*sr + rhor*ur);
 
     return Vars<3>({sl, ss, sr});
 }

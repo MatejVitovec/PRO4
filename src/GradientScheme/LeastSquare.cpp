@@ -82,7 +82,7 @@ void LeastSquare::calculateInverseM(Field<Mat<3,3>> M)
 }
 
 
-Field<Mat<5,3>> LeastSquare::calculateGradient(const Field<Compressible>& wl, const Field<Compressible>& wr, const Mesh& mesh) const
+/*Field<Mat<5,3>> LeastSquare::calculateGradient(const Field<Compressible>& wl, const Field<Compressible>& wr, const Mesh& mesh) const
 {
     Field<Mat<5,3>> grad(wl.size()); //TODO mozna ma byt cellList.size() misto wl.size()
     
@@ -111,4 +111,9 @@ Field<Mat<5,3>> LeastSquare::calculateGradient(const Field<Compressible>& wl, co
     }
 
     return grad;
+}*/
+
+Field<Mat<5,3>> LeastSquare::calculateGradient(const VolField<Compressible>& w, const Mesh& mesh) const
+{
+    return Field<Mat<5,3>>(w.size()); //TODO
 }

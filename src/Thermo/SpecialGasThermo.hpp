@@ -10,15 +10,12 @@ class SpecialGasThermo : public Thermo, SpecialGas
 
         SpecialGasThermo() : Thermo(), SpecialGas() {}
 
-        Vars<3> updateThermo(const Compressible& data) const;
+        Vars<3> updateThermo(const Compressible& data, const ThermoVar& thermoData) const;
+        
         Compressible primitiveToConservative(const Vars<5>& primitive) const;
         Compressible stagnationState(double TTot, double pTot) const;
-        //Compressible isentropicInletPressureTemperature(double pTot, double TTot, Vars<3> velocityDirection, Compressible stateIn) const;
-        //Compressible isentropicInletPressureDensity(double pTot, double rhoTot, Vars<3> velocityDirection, Compressible stateIn) const;
-
-        //Compressible isentropicInlet(double pTot, double TTot, double rhoTot, Vars<3> velocityDirection, Compressible stateIn) const;
-
-        Compressible isentropicInlet(double pTot, double TTot, double rhoTot, double sTot, double hTot, Vars<3> velocityDirection, Compressible stateIn) const;
+        
+        Compressible isentropicInlet(double pTot, double TTot, double rhoTot, double sTot, double hTot, Vars<3> velocityDirection, Compressible stateIn, ThermoVar thermoIn) const;
         std::array<double, 3> initPressureTemperatureInlet(double pTot, double TTot) const;
 };
 

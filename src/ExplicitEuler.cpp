@@ -12,13 +12,16 @@ void ExplicitEuler::solve()
     double lastTmdUpdateTime = 0.0;
     long thermoUpdateFieldTime = 0.0;
 
-    w = thermo->updateField(w);
+    //w = thermo->updateField(w);
+    //w.update(thermo->updateField(w));
+
+    thermo->updateThermoInternal(thermoField, w);
 
     iter = 0;
 
     bool exitLoop = false;
 
-    Field<Compressible> wn = Field<Compressible>(w.size());
+    VolField<Compressible> wn = w;
     Vars<5> resNorm;
 
     auto startAll = std::chrono::high_resolution_clock::now();
@@ -39,10 +42,16 @@ void ExplicitEuler::solve()
 
         Field<Vars<5>> res = calculateResidual();
 
-        wn = w + (res*timeSteps);
+        //wn = w + (res*timeSteps);
+        wn.update(w + (res*timeSteps));
 
         //auto start = std::chrono::high_resolution_clock::now();
-        wn = thermo->updateField(wn);        
+
+        //wn = thermo->updateField(wn);
+        //wn.update(thermo->updateField(wn));
+
+        thermo->updateThermo(thermoField, w);
+
         //auto stop = std::chrono::high_resolution_clock::now();
         //thermoUpdateFieldTime += std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
 
@@ -63,11 +72,11 @@ void ExplicitEuler::solve()
 
         if(iter % saveEveryIter == 0)
         {
-            outputCFD::outputVTK(savePath + "/results/results." + std::to_string(iter) + ".vtk", mesh, w);
+            outputCFD::outputVTK(savePath + "/results/results." + std::to_string(iter) + ".vtk", mesh, w, thermoField);
         }
     }
 
-    outputCFD::outputVTK(savePath + "/results/results." + std::to_string(iter) + ".vtk", mesh, w);
+    outputCFD::outputVTK(savePath + "/results/results." + std::to_string(iter) + ".vtk", mesh, w, thermoField);
     std::cout << "iter: " << iter << std::endl;
 
     //std::cout << "time: " << time << std::endl;

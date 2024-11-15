@@ -1,10 +1,10 @@
 #include <cmath>
 #include "Compressible.hpp"
 
-void Compressible::setThermoVar(Vars<3> thermoProp)
+/*void Compressible::setThermoVar(Vars<3> thermoProp)
 {
     thermoVar = thermoProp;
-}
+}*/
 
 double Compressible::density() const
 {
@@ -51,37 +51,20 @@ double Compressible::totalEnergy() const
     return data[RHO_E] / data[RHO];
 }
 
-double Compressible::temperature() const
-{
-    return thermoVar[T];
-}
-
-double Compressible::pressure() const
-{
-    return thermoVar[P];
-}
-
 double Compressible::internalEnergy() const
 {
     return data[RHO_E]/data[RHO] - 0.5*this->absVelocity2();
 }
 
-double Compressible::soundSpeed() const
-{
-    return thermoVar[A];
-}
 
-double Compressible::machNumber() const
+
+/*double Compressible::machNumber() const
 {
     return absVelocity()/soundSpeed();
-}
+}*/
 
-Vars<3> Compressible::thermo() const
-{
-    return thermoVar;
-}
 
-Vars<5> Compressible::flux(const Vars<3>& normalVector) const
+/*Vars<5> Compressible::flux(const Vars<3>& normalVector) const
 {
     Vars<3> velocity = this->velocity();
 
@@ -92,16 +75,29 @@ Vars<5> Compressible::flux(const Vars<3>& normalVector) const
                          data[RHO] * velocity[1] * normalVelocity + thermoVar[P] * normalVector[1],
                          data[RHO] * velocity[2] * normalVelocity + thermoVar[P] * normalVector[2],
                          (data[RHO_E]+ thermoVar[P]) * normalVelocity});  //tady byla entalpie - muze byt blbe
+}*/
+
+Vars<5> Compressible::flux(const Vars<3>& thermoData, const Vars<3>& normalVector) const
+{
+    Vars<3> velocity = this->velocity();
+
+    double normalVelocity = dot(velocity, normalVector);
+
+    return Compressible({data[RHO] * normalVelocity,
+                         data[RHO] * velocity[0] * normalVelocity + thermoData[1] * normalVector[0],
+                         data[RHO] * velocity[1] * normalVelocity + thermoData[1] * normalVector[1],
+                         data[RHO] * velocity[2] * normalVelocity + thermoData[1] * normalVector[2],
+                         (data[RHO_E] + thermoData[1]) * normalVelocity});
 }
 
-Vars<5> Compressible::primitive() const
+/*Vars<5> Compressible::primitive() const
 {
     return Vars<5>({data[RHO],
                     data[RHO_U] / data[RHO],
                     data[RHO_V] / data[RHO],
                     data[RHO_W] / data[RHO],
                     thermoVar[P]});
-}
+}*/
 
 void Compressible::operator+=(const Compressible& v)
 {

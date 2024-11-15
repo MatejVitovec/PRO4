@@ -22,7 +22,7 @@ int main(int argc, char** argv)
         savePath = "../results/" + savePath;
     }
     else
-    {
+    { 
         //savePath = "../resultOK/lowTempAir/idealGasHLLE";
         savePath = "../results/SE1050/1ord/lowTempAir/IdealGas2";
         //savePath = "../results/SE1050/2ord/lowTempAir/idealGas";
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     std::unique_ptr<FVMScheme> mySolver = setter.createAndSetSolver();
     mySolver->setSavePath(savePath);
 
-    outputCFD::outputVTK(savePath + "/results/results.0.vtk", mySolver->getMesh(), mySolver->getResults());
+    outputCFD::outputVTK(savePath + "/results/results.0.vtk", mySolver->getMesh(), mySolver->getResults(),  mySolver->getResultsThermo());
 
     auto stop1 = std::chrono::high_resolution_clock::now();
 
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     auto stop2 = std::chrono::high_resolution_clock::now();
 	std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(stop2 - stop1).count() << " ms\n";
 
-    outputCFD::saveFieldOnBoundary(savePath + "/pressure.txt", "wall", mySolver->getMesh(), mySolver->getResults());
+    outputCFD::saveFieldOnBoundary(savePath + "/pressure.txt", "wall", mySolver->getMesh(), mySolver->getResults(), mySolver->getResultsThermo());
 
     /*Field<Compressible> w = outputCFD::loadCompressibleFieldFromVTK(savePath + "/results/results.665000.vtk");
     w = mySolver->getThermoRef()->updateField(w);
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
     //outputCFD::outputVTK(savePath + "/testResult.vtk",  mySolver->getMesh(), w);
     //outputCFD::outputVTKPeriodicBoundary(savePath + "/periodicResult.vtk", mySolver->getMesh(), w, Vars<3>({0.0, 0.0551168, 0.0}));
 
-    outputCFD::outputVTKPeriodicBoundary(savePath + "/periodicResult.vtk", mySolver->getMesh(), mySolver->getResults(), Vars<3>({0.0, 0.0551168, 0.0}));
+    outputCFD::outputVTKPeriodicBoundary(savePath + "/periodicResult.vtk", mySolver->getMesh(), mySolver->getResults(), mySolver->getResultsThermo(), Vars<3>({0.0, 0.0551168, 0.0}));
 
     return 0;
 }
