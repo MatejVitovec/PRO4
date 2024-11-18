@@ -21,7 +21,7 @@ void ExplicitEuler::solve()
 
     bool exitLoop = false;
 
-    VolField<Compressible> wn = w;
+    //VolField<Compressible> wn = w;
     Vars<5> resNorm;
 
     auto startAll = std::chrono::high_resolution_clock::now();
@@ -42,8 +42,9 @@ void ExplicitEuler::solve()
 
         Field<Vars<5>> res = calculateResidual();
 
-        //wn = w + (res*timeSteps);
-        wn.update(w + (res*timeSteps));
+        w += res*timeSteps;
+        //wn = w;
+        //wn += res*timeSteps;
 
         //auto start = std::chrono::high_resolution_clock::now();
 
@@ -67,8 +68,6 @@ void ExplicitEuler::solve()
             //outputCFD::saveValue(savePath + "/tmdUpdateTime.txt", thermoUpdateFieldTime/1000.0 - lastTmdUpdateTime);
             //lastTmdUpdateTime = thermoUpdateFieldTime/1000.0;
         }
-
-        w = wn;
 
         if(iter % saveEveryIter == 0)
         {

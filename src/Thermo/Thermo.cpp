@@ -3,39 +3,39 @@
 
 #include "Thermo.hpp"
 
-void Thermo::updateThermo(VolField<ThermoVar>& thermoFiled, const VolField<Compressible>& w) const
+void Thermo::updateThermo(VolField<ThermoVar>& thermoField, const VolField<Compressible>& w) const
 {
     #pragma omp parallel for
-    for (size_t i = 0; i < thermoFiled.size(); i++)
+    for (size_t i = 0; i < thermoField.size(); i++)
     {
-        thermoFiled[i] = updateThermo(w[i], thermoFiled[i]);
+        thermoField[i] = updateThermo(w[i], thermoField[i]);
     }
 
     #pragma omp parallel for
-    for (size_t j = 0; j < thermoFiled.boundarySize(); j++)
+    for (size_t j = 0; j < thermoField.boundarySize(); j++)
     {
-        for (size_t i = 0; i < thermoFiled.boundary(j).size(); i++)
+        for (size_t i = 0; i < thermoField.boundary(j).size(); i++)
         {
-            thermoFiled.boundary(j)[i] = updateThermo(w.boundary(j)[i], thermoFiled.boundary(j)[i]);
+            thermoField.boundary(j)[i] = updateThermo(w.boundary(j)[i], thermoField.boundary(j)[i]);
         }        
     }
 }
 
-void Thermo::updateThermoInternal(VolField<ThermoVar>& thermoFiled, const VolField<Compressible>& w) const
+void Thermo::updateThermoInternal(VolField<ThermoVar>& thermoField, const VolField<Compressible>& w) const
 {
     #pragma omp parallel for
-    for (size_t i = 0; i < thermoFiled.size(); i++)
+    for (size_t i = 0; i < thermoField.size(); i++)
     {
-        thermoFiled[i] = updateThermo(w[i], thermoFiled[i]);
+        thermoField[i] = updateThermo(w[i], thermoField[i]);
     }
 }
 
 
-void Thermo::updateThermo(Field<ThermoVar>& thermoFiled, const Field<Compressible>& w) const
+void Thermo::updateThermo(Field<ThermoVar>& thermoField, const Field<Compressible>& w) const
 {
     #pragma omp parallel for
-    for (size_t i = 0; i < thermoFiled.size(); i++)
+    for (size_t i = 0; i < thermoField.size(); i++)
     {
-        thermoFiled[i] = updateThermo(w[i], thermoFiled[i]);
+        thermoField[i] = updateThermo(w[i], thermoField[i]);
     }
 }

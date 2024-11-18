@@ -17,9 +17,9 @@ class Thermo
 
         virtual ~Thermo() {}
 
-        void updateThermo(VolField<ThermoVar>& thermoFiled, const VolField<Compressible>& w) const;
-        void updateThermoInternal(VolField<ThermoVar>& thermoFiled, const VolField<Compressible>& w) const;
-        void updateThermo(Field<ThermoVar>& thermoFiled, const Field<Compressible>& w) const;
+        void updateThermo(VolField<ThermoVar>& thermoField, const VolField<Compressible>& w) const;
+        void updateThermoInternal(VolField<ThermoVar>& thermoField, const VolField<Compressible>& w) const;
+        void updateThermo(Field<ThermoVar>& thermoField, const Field<Compressible>& w) const;
 
         virtual Vars<3> updateThermo(const Compressible& data, const ThermoVar& thermoData) const = 0;
 
