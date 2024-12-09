@@ -3,6 +3,7 @@
 
 #include "../Compressible.hpp"
 #include "../ThermoVar.hpp"
+#include "ComponentThermoVar.hpp"
 #include "../Field.hpp"
 #include "../VolField.hpp"
 #include "../Mesh/Mesh.hpp"
@@ -21,7 +22,12 @@ class Thermo
         void updateThermoInternal(VolField<ThermoVar>& thermoField, const VolField<Compressible>& w) const;
         void updateThermo(Field<ThermoVar>& thermoField, const Field<Compressible>& w) const;
 
+        void updateThermo(VolField<ComponentThermoVar>& thermoField) const;
+        void updateThermoInternal(VolField<ComponentThermoVar>& thermoField) const;
+        void updateThermo(Field<ComponentThermoVar>& thermoField) const;
+
         virtual Vars<3> updateThermo(const Compressible& data, const ThermoVar& thermoData) const = 0;
+        virtual void updateThermo(ComponentThermoVar& thermoData) const = 0;
 
         virtual Compressible primitiveToConservative(const Vars<5>& primitive) const = 0;
         virtual Compressible stagnationState(double TTot, double pTot) const = 0;

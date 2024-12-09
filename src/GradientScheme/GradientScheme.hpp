@@ -7,6 +7,7 @@
 #include "../Field.hpp"
 #include "../VolField.hpp"
 #include "../Compressible.hpp"
+#include "../Condensation/CompressibleMixture.hpp"
 
 #include "../Mat.hpp"
 
@@ -19,7 +20,9 @@ class GradientScheme
         virtual ~GradientScheme() {}
 
         virtual void init(const Mesh& mesh, const std::vector<std::shared_ptr<BoundaryCondition>>& boundaryConditionList);
+
         virtual Field<Mat<5,3>> calculateGradient(const VolField<Compressible>& w, const Mesh& mesh) const;
+        virtual Field<Mat<9,3>> calculateGradient(const VolField<CompressibleMixture>& w, const Mesh& mesh) const;
   
     protected:
 

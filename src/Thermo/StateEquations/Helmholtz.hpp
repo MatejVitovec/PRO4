@@ -27,6 +27,11 @@ class Helmholtz
 
         std::pair<double, double> RhoTFromSP(double s, double p, double guessRho, double guessT) const;
 
+        double R() const
+        {
+            return specGasConst;
+        }
+
     protected:
         static constexpr double critT = 647.096;
         static constexpr double critRho = 322.0;

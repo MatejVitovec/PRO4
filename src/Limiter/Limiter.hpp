@@ -5,6 +5,7 @@
 #include "../Field.hpp"
 #include "../VolField.hpp"
 #include "../Compressible.hpp"
+#include "../Condensation/CompressibleMixture.hpp"
 #include "../Mat.hpp"
 
 class Limiter
@@ -15,9 +16,8 @@ class Limiter
 
         virtual ~Limiter() {}
 
-        //virtual Field<Vars<5>> calculateLimiter(const Field<Compressible>& wl, const Field<Compressible>& wr, const Field<Mat<5,3>>& grad, const Mesh& mesh) const;
-        //virtual Field<Vars<5>> calculateLimiter(const Field<Compressible>& w, const std::vector<std::vector<Compressible>>& boundaryField, Field<Mat<5,3>>& grad, const Mesh& mesh) const;
         virtual Field<Vars<5>> calculateLimiter(const VolField<Compressible>& w, Field<Mat<5,3>>& grad, const Mesh& mesh) const;
+        virtual Field<Vars<9>> calculateLimiter(const VolField<CompressibleMixture>& w, Field<Mat<9,3>>& grad, const Mesh& mesh) const;
 
     protected:
         virtual double limiterFunction(double y) const;

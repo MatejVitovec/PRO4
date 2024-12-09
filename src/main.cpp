@@ -15,6 +15,9 @@ int main(int argc, char** argv)
 {
     feenableexcept(FE_INVALID | FE_OVERFLOW);
 
+    //std::cout << "__cplusplus: " << __cplusplus << std::endl;
+
+
     std::string savePath;
     if (argc >1 )
     {
@@ -26,6 +29,7 @@ int main(int argc, char** argv)
         //savePath = "../resultOK/lowTempAir/idealGasHLLE";
         savePath = "../results/SE1050/1ord/lowTempAir/IdealGas2";
         //savePath = "../results/SE1050/2ord/lowTempAir/idealGas";
+        savePath = "../results/testMeanPressureOutlet";
     }
     
     CaseSetter setter = CaseSetter();
@@ -44,9 +48,9 @@ int main(int argc, char** argv)
 
     outputCFD::saveFieldOnBoundary(savePath + "/pressure.txt", "wall", mySolver->getMesh(), mySolver->getResults(), mySolver->getResultsThermo());
 
-    /*Field<Compressible> w = outputCFD::loadCompressibleFieldFromVTK(savePath + "/results/results.665000.vtk");
-    w = mySolver->getThermoRef()->updateField(w);
-    outputCFD::saveFieldOnBoundary(savePath + "/pressure.txt", "wall", mySolver->getMesh(), w);*/
+    //Field<Compressible> w = outputCFD::loadCompressibleFieldFromVTK(savePath + "/results/results.665000.vtk");
+    //w = mySolver->getThermoRef()->updateField(w);
+    //outputCFD::saveFieldOnBoundary(savePath + "/pressure.txt", "wall", mySolver->getMesh(), w);
     //outputCFD::outputVTK(savePath + "/testResult.vtk",  mySolver->getMesh(), w);
     //outputCFD::outputVTKPeriodicBoundary(savePath + "/periodicResult.vtk", mySolver->getMesh(), w, Vars<3>({0.0, 0.0551168, 0.0}));
 

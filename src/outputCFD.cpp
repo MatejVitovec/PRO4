@@ -116,6 +116,98 @@ void outputCFD::outputVTK(std::string fileName, const Mesh& mesh, const Field<Co
 	f.close();
 }
 
+
+void outputCFD::outputVTK(std::string fileName, const Mesh& mesh, const Field<CompressibleMixture> w, const Field<ThermoVar>& thermoField) //TODO ulozeni condensation data
+{
+    const std::vector<Vars<3>>& nodeList = mesh.getNodeList();
+    const std::vector<Cell>& cellList = mesh.getCellList();
+
+    int cellSize = mesh.getCellsSize();
+
+	std::ofstream f;
+	f.open(fileName, std::ios::out);
+	
+	f << "# vtk DataFile Version 1.0\n";
+	f << "unstructured grid\n";
+	f << "ascii\n";
+	f << "DATASET UNSTRUCTURED_GRID\n";
+	
+	f << "points " << mesh.getNodesSize() << " float\n";
+	
+	for (int i = 0; i < mesh.getNodesSize(); i++)
+    {
+		f << nodeList[i] << "\n";
+	}
+	
+	f << "cells " << cellSize << " " << calculateCellNodeSize(mesh) << "\n";
+	
+	for (int i = 0; i < cellSize; i++)
+    {
+		f << cellList[i] << "\n";
+	}
+	
+	f << "cell_types " << cellSize << "\n";
+	
+	for (int i = 0; i < cellSize; i++)
+    {
+		f << cellList[i].getVtkType() << "\n";
+	}
+	
+	f << "CELL_DATA " << cellSize << "\n";
+ 	f << "SCALARS rho float\n"; 
+	f << "LOOKUP_TABLE default\n";
+
+    for (int i = 0; i < cellSize; i++)
+    {
+		f << roundToZero(w[i].density()) << "\n";
+	}
+
+	//f << "VECTORS u float\n"; 
+ 	f << "SCALARS U float 3\n"; 
+	f << "LOOKUP_TABLE default\n";
+
+    for (int i = 0; i < cellSize; i++)
+    {
+		f << roundToZero(w[i].velocityU()) << " " << roundToZero(w[i].velocityV()) << " " << roundToZero(w[i].velocityW()) << "\n";
+	}	
+
+ 	f << "SCALARS e float\n"; 
+	f << "LOOKUP_TABLE default\n";
+
+    for (int i = 0; i < cellSize; i++)
+    {
+		f << roundToZero(w[i].internalEnergy()) << "\n";
+	}
+	
+	f << "SCALARS p float\n"; 
+	f << "LOOKUP_TABLE default\n";
+
+    for (int i = 0; i < cellSize; i++)
+    {
+		f << roundToZero(thermoField[i].pressure()) << "\n";
+	}
+
+	f << "SCALARS M float\n"; 
+	f << "LOOKUP_TABLE default\n";
+
+    for (int i = 0; i < cellSize; i++)
+    {
+		f << roundToZero(w[i].absVelocity()/thermoField[i].soundSpeed()) << "\n";
+	}
+
+	f << "SCALARS T float\n"; 
+	f << "LOOKUP_TABLE default\n";
+
+    for (int i = 0; i < cellSize; i++)
+    {
+		f << roundToZero(thermoField[i].temperature()) << "\n";
+	}
+	
+	f << std::endl;
+
+	f.close();
+}
+
 void outputCFD::saveData(std::string fileName, const Field<Compressible>& w)
 {
 	std::ofstream f;
@@ -138,13 +230,20 @@ void outputCFD::saveData(std::string fileName, const Field<Compressible>& w)
 
 void outputCFD::saveResidual(std::string fileName, Vars<5> res)
 {
-
 	std::ofstream f;
 	f.open(fileName, std::ios_base::app);
 
 	//f << res[0] << " " << res[1] << " " << res[2] << " " << res[3] << " " << res[4] << std::endl;
 	f << res[0] <<std::endl;
 
+	f.close();
+}
+
+void outputCFD::saveResidual(std::string fileName, double res)
+{
+	std::ofstream f;
+	f.open(fileName, std::ios_base::app);
+	f << res <<std::endl;
 	f.close();
 }
 

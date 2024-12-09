@@ -11,6 +11,9 @@ class FreeBoundary : public BoundaryCondition
 
         Compressible calculateState(const Compressible& w, const ThermoVar& thermoVar, const Face& f, const Thermo * const thermoModel) const;
 
+        CompressibleMixture calculateState(const CompressibleMixture& w, const ThermoVar& thermoVar, const Face& f, const Thermo * const thermoModel) const;
+
+
 };
 
 #endif // FREEBOUNDARY_HPP

@@ -5,11 +5,13 @@
 #include <memory>
 #include <cmath>
 #include <sstream>
+#include <variant>
 
 template <int N>
 class Vars
 {
     public:
+
         Vars() : data() {}
         Vars(const std::array<double, N>& in) : data(in) {}
         Vars(double in) : data() { for (size_t i = 0; i < N; i++) data[i] = in; }
@@ -30,6 +32,16 @@ class Vars
         void operator-=(const Vars<N>& v);
 
         Vars<N> operator-();
+
+        const std::array<double, N>& getData() const
+        {
+            return data;
+        }
+
+        std::array<double, N>& getData()
+        {
+            return data;
+        }
         
     protected:
         std::array<double, N> data;

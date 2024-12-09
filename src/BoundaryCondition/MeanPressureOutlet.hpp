@@ -10,8 +10,9 @@ class MeanPressureOutlet : public BoundaryCondition
         MeanPressureOutlet(Boundary meshBoundary, double pressure_) : BoundaryCondition(meshBoundary, MEANPRESSUREOUTLET), pressure(pressure_) {}
 
         Compressible calculateState(const Compressible& w, const ThermoVar& thermoVar, const Face& f, const Thermo * const thermoModel) const;
-        
         std::vector<Compressible> calc(const VolField<Compressible>& w, const VolField<ThermoVar>& thermoField, const Mesh& mesh, const Thermo * const thermoModel) const;
+
+        std::vector<CompressibleMixture> calc(const VolField<CompressibleMixture>& w, const VolField<ThermoVar>& thermoField, const Mesh& mesh, const Thermo * const thermoModel) const;
 
         
 
@@ -19,6 +20,8 @@ class MeanPressureOutlet : public BoundaryCondition
         double pressure;
 
         double calculateCorrectionConstant(const Mesh& mesh, const Field<Compressible>& w, const Field<ThermoVar>& thermoField) const;
+
+        double calculateCorrectionConstant(const Mesh& mesh, const Field<CompressibleMixture>& w, const Field<ThermoVar>& thermoField) const;
 };
 
 

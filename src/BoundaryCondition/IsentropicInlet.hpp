@@ -22,6 +22,7 @@ class IsentropicInlet : public BoundaryCondition
                                                       velocityDirection(velocityDirection_) {}
 
         Compressible calculateState(const Compressible& w, const ThermoVar& thermoVar, const Face& f, const Thermo * const thermoModel) const;
+        CompressibleMixture calculateState(const CompressibleMixture& w, const ThermoVar& thermoVar, const Face& f, const Thermo * const thermoModel) const;
 
     private:
         double totalDensity;

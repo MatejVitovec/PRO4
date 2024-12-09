@@ -186,3 +186,30 @@ Field<Mat<5,3>> LeastSquaresPS::calculateGradient(const VolField<Compressible>& 
 
     return grad;
 }
+
+Field<Mat<9,3>> LeastSquaresPS::calculateGradient(const VolField<CompressibleMixture>& w, const Mesh& mesh) const
+{
+    Field<Mat<9,3>> grad(w.size());
+    
+    const std::vector<Cell>& cells = mesh.getCellList();
+    const std::vector<Face>& faces = mesh.getFaceList();
+    const std::vector<int>& neighbours = mesh.getNeighborIndexList();
+    const std::vector<int>& owners = mesh.getOwnerIndexList();
+
+    Field<Mat<3,9>> b = Field<Mat<3,9>>(MInv.size());
+
+    for (int cellId = 0; cellId < cellsStencil.size(); cellId++)
+    {
+        for (int i = 0; i < cellsStencil[cellId].size(); i++)
+        {
+            b[cellId] += outerProd(cellToCellDelta[cellId][i], w[cellsStencil[cellId][i]] - w[cellId]);
+        }
+    }
+
+    for (int i = 0; i < cells.size(); i++)
+    {
+        grad[i] = transpose(dot(MInv[i], b[i]));        
+    }
+
+    return grad;
+}

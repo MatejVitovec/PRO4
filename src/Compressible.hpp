@@ -17,6 +17,7 @@ class Compressible : public Vars<5>
         Compressible() : Vars<5>() {}
         Compressible(const Vars<5>& varsIn) : Vars<5>(varsIn) {}
         Compressible(const std::array<double, 5>& in) : Vars<5>(in) {}
+        //Compressible(const std::array<double, 5>& inRef ) : 
 
         virtual ~Compressible() {}
 

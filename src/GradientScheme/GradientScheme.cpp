@@ -13,3 +13,10 @@ Field<Mat<5,3>> GradientScheme::calculateGradient(const VolField<Compressible>& 
 
     return grad;
 }
+
+Field<Mat<9,3>> GradientScheme::calculateGradient(const VolField<CompressibleMixture>& w, const Mesh& mesh) const
+{
+    Field<Mat<9,3>> grad(w.size());
+
+    return grad;
+}
